@@ -1,11 +1,10 @@
 import './Hero.css';
-import Navbar from '../components/navbar';
+import {Cards} from './Cards';
 const HERO_IMAGE ='public/backgroundNU.png';
 
 export function Hero() {
   return (
     <div>
-      <Navbar />
       <header className="hero">
         <div className="hero__overlay" />
         <img className="hero__image" src={HERO_IMAGE} alt="Nile University campus" />
@@ -19,10 +18,13 @@ export function Hero() {
           <p className="hero__subtitle">
             Manage events, submit requests, and collaborate efficiently.
           </p>
-          <button className="hero__cta">Submit Request</button>
+        </div>
+        <div className="hero__cards">
+          <Cards />
         </div>
       </header>
     </div>
+    
   );
 }
 

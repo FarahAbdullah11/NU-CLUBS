@@ -1,0 +1,33 @@
+.calendar-container {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+    padding: 40px 20px;
+    background-color: #f6f1f1;
+}
+
+.calendar-container h1{
+    color: #000;
+    font-size: 32px;
+    text-align: left;
+    font-weight: bold;
+    margin-top: 100px;
+}
+.calendar-description{
+    color:#6c6a6a;
+    font-size: 16px;
+    margin-top: 1px;
+    margin-bottom:20px;
+    text-align: left;
+}
+.calendar-container iframe {
+    width: 100%;               /* responsive width */
+    max-width: 950px;          /* maximum width so it doesn't stretch too much */
+    height: 600px;             /* height of the calendar */
+    border: 2px solid #6c6a6a;              /* remove default iframe border */
+    border-radius: 10px;  
+    background-color: #f6f1f1;     /* rounded corners */
+  }
+
