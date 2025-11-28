@@ -41,24 +41,5 @@
   text-align: center;
 }
 
-@media (max-width: 768px) {
-  .cards-container {
-    flex-direction: column;
-    gap: 1.5rem;
-    padding: 1.5rem;
-  }
 
-  .card {
-    width: 100%;
-    padding: 1.5rem;
-  }
-
-  .card__title {
-    font-size: 1.1rem;
-  }
-
-  .card__description {
-    font-size: 0.9rem;
-  }
-}
 
