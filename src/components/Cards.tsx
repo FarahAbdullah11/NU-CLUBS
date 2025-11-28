@@ -16,7 +16,7 @@ const cardsData: CardData[] = [
   },
   {
     title: 'View my requests',
-    description: 'Check the status of your submitted requests'
+    description: 'Check the status of your requests'
   }
 ];
 
