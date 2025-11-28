@@ -30,7 +30,7 @@
   .logo-monogram {
     font-size: 24px;
     font-weight: 700;
-    color: #1e3a8a;
+    color: #007AC3;
     margin-right: 12px;
     line-height: 1;
   }
@@ -43,14 +43,14 @@
   .logo-english {
     font-size: 14px;
     font-weight: 600;
-    color: #1e3a8a;
+    color: #007AC3;
     line-height: 1.2;
   }
   
   .logo-arabic {
     font-size: 12px;
     font-weight: 600;
-    color: #1e3a8a;
+    color: #007AC3;
     line-height: 1.2;
     direction: rtl;
   }
@@ -59,7 +59,7 @@
   .navbar-title {
     font-size: 36px;
     font-weight: 700;
-    color: #1e3a8a;
+    color: #007AC3;
     letter-spacing: 2px;
     margin-left: 40px;
     flex: 1;
@@ -75,7 +75,7 @@
   .nav-link {
     font-size: 18px;
     font-weight: 700;
-    color: #1e3a8a;
+    color: #007AC3;
     text-decoration: none;
     transition: opacity 0.2s;
     position: relative;
