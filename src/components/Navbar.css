@@ -1,0 +1,102 @@
+.navbar {
+    background-color: #f5f0e8;
+    width: 100%;
+    padding: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    max-width: 100%;
+  }
+  
+  /* Logo Section */
+  .navbar-logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-container {
+    display: flex;
+    align-items: center;
+    border: 2px solid #1e3a8a;
+    padding: 8px 16px;
+    border-radius: 4px;
+  }
+  
+  .logo-monogram {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-right: 12px;
+    line-height: 1;
+  }
+  
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .logo-english {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e3a8a;
+    line-height: 1.2;
+  }
+  
+  .logo-arabic {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e3a8a;
+    line-height: 1.2;
+    direction: rtl;
+  }
+  
+  /* CLUBS Title */
+  .navbar-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1e3a8a;
+    letter-spacing: 2px;
+    margin-left: 40px;
+    flex: 1;
+  }
+  
+  /* Navigation Links */
+  .navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+  
+  .nav-link {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e3a8a;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    position: relative;
+  }
+  
+  .nav-link:hover {
+    opacity: 0.8;
+  }
+  
+  .nav-link.active {
+    opacity: 1;
+  }
+  
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #1e3a8a;
+  }
+  
+  

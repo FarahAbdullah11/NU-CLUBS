@@ -1,4 +1,4 @@
-import { Hero } from './components/Hero';
+import { Hero } from './pages/Hero';
 import './App.css';
 
 function App() {
