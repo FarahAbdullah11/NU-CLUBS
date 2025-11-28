@@ -6,7 +6,7 @@ const NavigationBar = () => {
 
   return (
     <nav className= "navbar">
-      <div className="navbar-contet">
+      <div className="navbar-content">
         {/*Logo section*/}
               <div className="navbar-logo">
                 <div className="logo-container">
@@ -18,8 +18,7 @@ const NavigationBar = () => {
                 </div>
               </div>
 
-              {/*Clubs heading */}
-              <div className="navbar-heading">Clubs</div>
+              
               
               {/* Navigation Links */}
         <div className="navbar-links">
