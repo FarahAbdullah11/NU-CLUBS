@@ -1,11 +1,9 @@
 import './Hero.css';
-import Navbar from '../components/navbar';
 const HERO_IMAGE ='public/backgroundNU.png';
 
 export function Hero() {
   return (
     <div>
-      <Navbar />
       <header className="hero">
         <div className="hero__overlay" />
         <img className="hero__image" src={HERO_IMAGE} alt="Nile University campus" />
@@ -23,6 +21,7 @@ export function Hero() {
         </div>
       </header>
     </div>
+    
   );
 }
 
