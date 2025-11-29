@@ -1,7 +1,11 @@
 import { Link, useLocation } from 'react-router-dom'
 import './navbar.css'
 
-const NavigationBar = () => {
+interface NavigationBarProps {
+  onLogout?: () => void;
+}
+
+const NavigationBar: React.FC<NavigationBarProps> = ({ onLogout }) => {
   const location = useLocation()
 
   return (
@@ -23,8 +27,8 @@ const NavigationBar = () => {
               {/* Navigation Links */}
         <div className="navbar-links">
           <Link 
-            to="/home"
-            className={`nav-link ${location.pathname === '/home' ? 'active' : ''}`}
+            to="/"
+            className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
           >
             Home
           </Link>
@@ -40,6 +44,11 @@ const NavigationBar = () => {
           >
             Profile
           </Link>
+          {onLogout && (
+            <button onClick={onLogout} className="nav-logout-button">
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </nav>
