@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import './navbar.css'
+import './Navbar.css'
 
 interface NavigationBarProps {
   onLogout?: () => void;
@@ -9,10 +9,10 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onLogout }) => {
   const location = useLocation()
 
   return (
-    <nav className= "navbar">
-      <div className="navbar-content">
+    <nav className= "Navbar">
+      <div className="Navbar-content">
         {/*Logo section*/}
-              <div className="navbar-logo">
+              <div className="Navbar-logo">
                 <div className="logo-container">
                     <div className="logo-monogram">Nu</div>
                     <div className="logo-text">
@@ -25,7 +25,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onLogout }) => {
               
               
               {/* Navigation Links */}
-        <div className="navbar-links">
+        <div className="Navbar-links">
           <Link 
             to="/"
             className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
@@ -55,7 +55,4 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onLogout }) => {
   )
 }
 
-export default NavigationBar
-                          
-        
-
+export default NavigationBar;
