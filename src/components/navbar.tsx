@@ -9,10 +9,10 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onLogout }) => {
   const location = useLocation()
 
   return (
-    <nav className= "Navbar">
-      <div className="Navbar-content">
+    <nav className= "navbar">
+      <div className="navbar-content">
         {/*Logo section*/}
-              <div className="Navbar-logo">
+              <div className="navbar-logo">
                 <div className="logo-container">
                     <div className="logo-monogram">Nu</div>
                     <div className="logo-text">
@@ -25,7 +25,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onLogout }) => {
               
               
               {/* Navigation Links */}
-        <div className="Navbar-links">
+        <div className="navbar-links">
           <Link 
             to="/"
             className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
