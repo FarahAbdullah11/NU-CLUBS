@@ -2,7 +2,7 @@
 import React from 'react';
 import { Hero } from '../components/Hero';
 import Calendar from '../components/Calendar';
-import Navbar from '../components/navbar';
+import NavigationBar from '../components/Navbar';
 
 interface HomepageProps {
   onLogout?: () => void;
@@ -11,7 +11,7 @@ interface HomepageProps {
 const Homepage: React.FC<HomepageProps> = ({ onLogout }) => {
   return (
     <div>
-      <Navbar onLogout={onLogout} />
+      <NavigationBar onLogout={onLogout} />
       <Hero />
       <Calendar />
     </div>
