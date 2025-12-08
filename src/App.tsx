@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import Homepage from './pages/Homepage';
+import ClubRequests from './pages/ClubRequests';
 import './App.css';
 
 function AppContent() {
@@ -53,6 +54,14 @@ function AppContent() {
           path="/"
           element={
             isLoggedIn ? <Homepage onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Club Requests Route (protected) */}
+        <Route
+          path="/request"
+          element={
+            isLoggedIn ? <ClubRequests onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
 

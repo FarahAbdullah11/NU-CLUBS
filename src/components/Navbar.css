@@ -59,10 +59,9 @@
   .navbar-title {
     font-size: 36px;
     font-weight: 700;
-    color: #007AC3;
+    color: #000000;
     letter-spacing: 2px;
     margin-left: 40px;
-    flex: 1;
   }
   
   /* Navigation Links */
