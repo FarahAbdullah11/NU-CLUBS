@@ -1,0 +1,133 @@
+.club-requests-page {
+  min-height: 100vh;
+  background-color: #faf9f6;
+}
+
+.club-requests-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+.club-requests-hero {
+  margin-bottom: 80px;
+}
+
+.club-requests-title {
+  font-size: 48px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 16px 0;
+}
+
+.club-requests-subtitle {
+  font-size: 18px;
+  color: #666666;
+  margin: 0 0 40px 0;
+  font-weight: 400;
+}
+
+.club-requests-buttons {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-submit-request {
+  background-color: #007AC3;
+  color: #ffffff;
+  border: none;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-submit-request:hover {
+  background-color: #005a94;
+}
+
+.btn-view-request {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #000000;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-view-request:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.request-types-section {
+  margin-top: 60px;
+}
+
+.request-types-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 32px 0;
+}
+
+.request-type-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.request-type-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+
+.request-type-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.card-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 12px 0;
+}
+
+.card-description {
+  font-size: 16px;
+  color: #666666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .club-requests-content {
+    padding: 40px 20px;
+  }
+
+  .club-requests-title {
+    font-size: 36px;
+  }
+
+
+  .club-requests-buttons {
+    flex-direction: column;
+  }
+
+  .btn-submit-request,
+  .btn-view-request {
+    width: 100%;
+  }
+}
+

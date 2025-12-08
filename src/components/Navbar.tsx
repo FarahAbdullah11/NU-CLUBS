@@ -22,7 +22,9 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onLogout }) => {
                 </div>
               </div>
 
-              
+              {location.pathname === '/request' && (
+                <div className="navbar-title">CLUBS</div>
+              )}
               
               {/* Navigation Links */}
         <div className="navbar-links">
