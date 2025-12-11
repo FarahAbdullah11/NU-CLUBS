@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'r
 import LoginPage from './components/LoginPage';
 import Homepage from './pages/Homepage';
 import ClubRequests from './pages/ClubRequests';
+import Dashboard from './pages/NIMUN_Dashboard';
 import './App.css';
 
 function AppContent() {
@@ -57,11 +58,43 @@ function AppContent() {
           }
         />
 
+        {/* Dashboard Route (protected) */}
+        <Route
+          path="/dashboard"
+          element={
+            isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
         {/* Club Requests Route (protected) */}
         <Route
           path="/request"
           element={
             isLoggedIn ? <ClubRequests onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Calendar Route (protected) - placeholder for now */}
+        <Route
+          path="/calendar"
+          element={
+            isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Funding Route (protected) - placeholder for now */}
+        <Route
+          path="/funding"
+          element={
+            isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Profile Route (protected) - placeholder for now */}
+        <Route
+          path="/profile"
+          element={
+            isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
 
