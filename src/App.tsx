@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'r
 import LoginPage from './components/LoginPage';
 import Homepage from './pages/Homepage';
 import ClubRequests from './pages/ClubRequests';
-import Dashboard from './pages/NIMUN_Dashboard';
+import Dashboard from './pages/ClubDashboard';
 import './App.css';
 
 function AppContent() {
@@ -20,15 +20,29 @@ function AppContent() {
   }, []);
 
   // Handle successful login
-  const handleLogin = (identifier: string, password: string) => {
-    // 🔒 Replace this with real API call later
-    if (identifier.trim() && password.trim()) {
-      // Simulate successful login
-      localStorage.setItem('authToken', 'valid-token');
-      setIsLoggedIn(true);
-      navigate('/');
-    } else {
-      alert('Please enter valid credentials');
+  const handleLogin = async (identifier: string, password: string) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ identifier, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+        setIsLoggedIn(true);
+        navigate('/');
+      } else {
+        alert(data.error || 'Login failed. Please check your credentials.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Connection error. Please make sure the server is running.');
     }
   };
 

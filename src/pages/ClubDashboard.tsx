@@ -1,31 +1,196 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import './NIMUN_Dashboard.css';
+import './ClubDashboard.css';
 
 interface DashboardProps {
   onLogout?: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+interface ClubData {
+  club_id: number;
+  club_name: string;
+  logo_url: string;
+  budget: number;
+}
+
+interface DashboardMetrics {
+  total_members: number;
+  pending_requests: number;
+  upcoming_events: number;
+  current_budget: number;
+}
+
+interface Notification {
+  notification_id: number;
+  title: string;
+  message: string;
+  is_read: boolean;
+}
+
+interface UserData {
+  user_id: number;
+  fullname: string;
+  role: string;
+}
+
+const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [clubData, setClubData] = useState<ClubData | null>(null);
+  const [metrics, setMetrics] = useState<DashboardMetrics>({
+    total_members: 0,
+    pending_requests: 0,
+    upcoming_events: 0,
+    current_budget: 0
+  });
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Logo Component - Using JPG image
-  const NIMUNLogo = ({ size = 80, className = "" }: { size?: number; className?: string }) => (
-    <img 
-      src="/nimun-logo.jpg" 
-      alt="NIMUN Logo" 
-      width={size} 
-      height={size}
-      className={className}
-      style={{ objectFit: 'contain' }}
-    />
-  );
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      // Fetch user data
+      const userResponse = await fetch('http://localhost:3001/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (userResponse.ok) {
+        const user = await userResponse.json();
+        setUserData(user);
+
+        // Fetch club data if user is a club leader
+        if (user.role === 'CLUB_LEADER' && user.club_id) {
+          const clubResponse = await fetch(`http://localhost:3001/api/clubs/${user.club_id}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (clubResponse.ok) {
+            const club = await clubResponse.json();
+            setClubData(club);
+          }
+
+          // Fetch dashboard metrics
+          const metricsResponse = await fetch(`http://localhost:3001/api/clubs/${user.club_id}/metrics`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (metricsResponse.ok) {
+            const metricsData = await metricsResponse.json();
+            setMetrics(metricsData);
+          }
+
+          // Fetch notifications
+          const notificationsResponse = await fetch('http://localhost:3001/api/notifications', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (notificationsResponse.ok) {
+            const notificationsData = await notificationsResponse.json();
+            setNotifications(notificationsData);
+          }
+        }
+      } else {
+        // If token is invalid, redirect to login
+        localStorage.removeItem('authToken');
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      // Fallback to mock data for development
+      setClubData({
+        club_id: 1,
+        club_name: 'NIMUN',
+        logo_url: '/nimun-logo.jpg',
+        budget: 5000
+      });
+      setMetrics({
+        total_members: 50,
+        pending_requests: 5,
+        upcoming_events: 3,
+        current_budget: 5000
+      });
+      setUserData({
+        user_id: 1,
+        fullname: 'Ahmed Hassan',
+        role: 'CLUB_LEADER'
+      });
+      setNotifications([
+        { notification_id: 1, title: 'Room Booking Approved', message: 'Your request has been approved', is_read: false },
+        { notification_id: 2, title: 'Funding Request Pending', message: 'Your funding request is under review', is_read: false }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  // Club Logo Component - Dynamic based on club data
+  const ClubLogo = ({ size = 80, className = "" }: { size?: number; className?: string }) => {
+    if (clubData?.logo_url) {
+      return (
+        <img 
+          src={clubData.logo_url} 
+          alt={`${clubData.club_name} Logo`}
+          width={size} 
+          height={size}
+          className={className}
+          style={{ objectFit: 'contain' }}
+        />
+      );
+    }
+    // Fallback to default logo or text
+    return (
+      <div 
+        className={className}
+        style={{ 
+          width: size, 
+          height: size, 
+          borderRadius: '50%', 
+          backgroundColor: '#3b82f6',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: size * 0.4,
+          fontWeight: 'bold'
+        }}
+      >
+        {clubData?.club_name?.charAt(0) || 'C'}
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="dashboard-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  const unreadNotifications = notifications.filter(n => !n.is_read).length;
 
   return (
     <div className="dashboard-container">
@@ -34,9 +199,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <div className="logo-circle">
-              <NIMUNLogo size={80} className="nimun-logo" />
+              <ClubLogo size={80} className="" />
             </div>
-            <h2 className="sidebar-title">NIMUN</h2>
+            <h2 className="sidebar-title">{clubData?.club_name || 'Club'}</h2>
           </div>
         </div>
         
@@ -108,10 +273,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         <header className="dashboard-header">
           <div className="dashboard-header-left" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
             <div className="header-logo-small">
-              <NIMUNLogo size={40} className="header-nimun-logo" />
+              <ClubLogo size={40} className="" />
             </div>
             <div className="dashboard-header-title-container">
-              <h1 className="dashboard-header-title">NIMUN</h1>
+              <h1 className="dashboard-header-title">{clubData?.club_name || 'Club'}</h1>
               <p className="dashboard-header-subtitle">Club Dashboard</p>
             </div>
           </div>
@@ -144,7 +309,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" fill="none"/>
                   <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" fill="none"/>
                 </svg>
-                <span className="notification-badge">3</span>
+                {unreadNotifications > 0 && (
+                  <span className="notification-badge">{unreadNotifications}</span>
+                )}
               </button>
 
               {/* User Profile */}
@@ -156,8 +323,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   </svg>
                 </div>
                 <div className="user-info">
-                  <span className="user-name">John Doe</span>
-                  <span className="user-role">Admin</span>
+                  <span className="user-name">{userData?.fullname || 'User'}</span>
+                  <span className="user-role">{userData?.role === 'CLUB_LEADER' ? 'Club Leader' : userData?.role || 'User'}</span>
                 </div>
                 <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2" fill="none"/>
@@ -179,7 +346,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               </svg>
             </div>
             <h3 className="metric-label">Members</h3>
-            <p className="metric-value">50</p>
+            <p className="metric-value">{metrics.total_members}</p>
           </div>
           <div className="metric-card">
             <div className="metric-icon requests-icon">
@@ -189,7 +356,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               </svg>
             </div>
             <h3 className="metric-label">Pending Requests</h3>
-            <p className="metric-value">5</p>
+            <p className="metric-value">{metrics.pending_requests}</p>
           </div>
           <div className="metric-card">
             <div className="metric-icon events-icon">
@@ -201,7 +368,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               </svg>
             </div>
             <h3 className="metric-label">Upcoming Events</h3>
-            <p className="metric-value">3</p>
+            <p className="metric-value">{metrics.upcoming_events}</p>
           </div>
           <div className="metric-card">
             <div className="metric-icon budget-icon">
@@ -211,7 +378,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               </svg>
             </div>
             <h3 className="metric-label">Budget</h3>
-            <p className="metric-value">$2000</p>
+            <p className="metric-value">${metrics.current_budget.toLocaleString()}</p>
           </div>
         </section>
 
@@ -228,14 +395,18 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               <h2 className="notifications-title">Notifications</h2>
             </div>
             <ul className="notifications-list">
-              <li className="notification-item">
-                <span className="notification-dot"></span>
-                <span className="notification-text">Announcement: Club meeting on Friday</span>
-              </li>
-              <li className="notification-item">
-                <span className="notification-dot"></span>
-                <span className="notification-text">New funding request submitted</span>
-              </li>
+              {notifications.length > 0 ? (
+                notifications.slice(0, 5).map((notification) => (
+                  <li key={notification.notification_id} className="notification-item">
+                    <span className="notification-dot"></span>
+                    <span className="notification-text">{notification.title}: {notification.message}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="notification-item">
+                  <span className="notification-text">No notifications</span>
+                </li>
+              )}
             </ul>
           </div>
         </section>
@@ -244,5 +415,5 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   );
 };
 
-export default Dashboard;
+export default ClubDashboard;
 
