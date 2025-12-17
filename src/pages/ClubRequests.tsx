@@ -20,7 +20,6 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
           
           <div className="club-requests-buttons">
             <button className="btn-submit-request">Submit Request</button>
-            <button className="btn-view-request">View my Request</button>
           </div>
         </div>
 
