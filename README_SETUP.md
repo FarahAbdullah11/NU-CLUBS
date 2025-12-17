@@ -75,6 +75,10 @@ Complete setup guide for the NU Clubs Portal project.
    - **ICPC Leader**: `NU2021003` / any password
    - **IEEE Leader**: `NU2021004` / any password
 
+   ## Setup Passwords
+- To auto-update: `node scripts/update-passwords.js`
+- To generate SQL for manual run: `node scripts/generate-all-passwords.js`
+
 ## Project Structure
 
 ```
