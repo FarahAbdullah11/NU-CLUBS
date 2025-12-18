@@ -1,0 +1,61 @@
+.Room-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(6, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Room {
+  width: 450px;
+  background: white;
+  border-radius: 10px;
+  padding: 30px;
+}
+
+.Room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  background: none;
+  margin-bottom: 40px;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.Room-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.cancel {
+  background: #ccc;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+}
+
+.submit {
+  background: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+}

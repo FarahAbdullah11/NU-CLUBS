@@ -18,23 +18,28 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
   const [roomId, setRoomId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
 
+  // Get user data from localStorage
   const userDataStr = localStorage.getItem('userData');
   if (!userDataStr) {
     return (
       <div className="club-requests-page">
         <NavigationBar onLogout={onLogout} />
-        <div className="club-requests-content">
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <p>Please log in to submit requests.</p>
-            <button 
-              onClick={() => window.location.href = '/login'}
-              className="btn-submit-request"
-            >
-              Go to Login
-            </button>
-          </div>
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          <p>Please log in to submit requests.</p>
+          <button 
+            onClick={() => window.location.href = '/login'}
+            style={{ 
+              padding: '0.5rem 1rem', 
+              backgroundColor: '#1a73e8', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Go to Login
+          </button>
         </div>
       </div>
     );
@@ -43,6 +48,7 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
   const userData = JSON.parse(userDataStr);
   const clubId = userData.club_id;
 
+  // Get club name for display
   const getClubName = () => {
     if (clubId === 1) return 'NIMUN';
     if (clubId === 2) return 'RPM';
@@ -55,9 +61,9 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
     e.preventDefault();
     setSubmitting(true);
     setMessage('');
-    setMessageType(null);
 
     try {
+      // Build request data
       const requestData: any = {
         user_id: userData.user_id,
         club_id: clubId,
@@ -66,29 +72,31 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
         request_type: requestType
       };
 
+      // Add optional fields only if provided
       if (eventDate) requestData.event_date = eventDate;
       if (startTime) requestData.start_time = startTime;
       if (endTime) requestData.end_time = endTime;
       if (location.trim()) requestData.location = location.trim();
       if (roomId.trim()) requestData.room_id = parseInt(roomId.trim());
 
+      // Validate required fields
       if (!requestData.title) {
-        setMessage('Title is required');
-        setMessageType('error');
+        setMessage('❌ Title is required');
         setSubmitting(false);
         return;
       }
 
       const response = await fetch('http://localhost:5000/api/requests', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(requestData)
       });
 
       if (response.ok) {
         const result = await response.json();
-        setMessage(`Request submitted successfully! Request ID: ${result.request_id}`);
-        setMessageType('success');
+        setMessage(`✅ Request submitted successfully! Request ID: ${result.request_id}`);
         
         // Reset form
         setTitle('');
@@ -100,12 +108,10 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
         setRoomId('');
       } else {
         const errorData = await response.json().catch(() => ({}));
-        setMessage(errorData.error || 'Failed to submit request. Please try again.');
-        setMessageType('error');
+        setMessage(`❌ Error: ${errorData.error || 'Failed to submit request. Please try again.'}`);
       }
     } catch (err) {
-      setMessage('Network error. Please make sure the Flask server is running.');
-      setMessageType('error');
+      setMessage('❌ Network error. Please make sure the Flask server is running.');
       console.error('Submission error:', err);
     } finally {
       setSubmitting(false);
@@ -124,28 +130,37 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
           </p>
         </div>
 
-        {/* Form Section */}
         <div className="request-form-container">
           {message && (
-            <div className={`message-container message-${messageType}`}>
+            <div 
+              style={{ 
+                padding: '1rem', 
+                marginBottom: '1rem', 
+                backgroundColor: message.includes('✅') ? '#d4edda' : '#f8d7da',
+                color: message.includes('✅') ? '#155724' : '#721c24',
+                borderRadius: '4px',
+                border: message.includes('✅') ? '1px solid #c3e6cb' : '1px solid #f5c6cb'
+              }}
+            >
               {message}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="request-form">
             <div className="form-group">
               <label htmlFor="requestType">Request Type *</label>
               <select
                 id="requestType"
                 value={requestType}
                 onChange={(e) => setRequestType(e.target.value as any)}
+                required
                 className="form-control"
               >
                 <option value="ROOM_BOOKING">Room Booking</option>
                 <option value="EVENT">Event</option>
                 <option value="FUNDING">Funding Request</option>
               </select>
-            </div>
+            </ div>
 
             <div className="form-group">
               <label htmlFor="title">Title *</label>
@@ -154,6 +169,7 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                required
                 className="form-control"
                 placeholder="e.g., Annual MUN Conference"
               />
@@ -171,6 +187,7 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
               />
             </div>
 
+            {/* Event/Booking Details (only for ROOM_BOOKING and EVENT) */}
             {(requestType === 'ROOM_BOOKING' || requestType === 'EVENT') && (
               <>
                 <div className="form-row">
@@ -195,9 +212,7 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
                       className="form-control"
                     />
                   </div>
-                </div>
 
-                <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="endTime">End Time</label>
                     <input
@@ -206,18 +221,6 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
                       className="form-control"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="roomId">Room ID (optional)</label>
-                    <input
-                      type="number"
-                      id="roomId"
-                      value={roomId}
-                      onChange={(e) => setRoomId(e.target.value)}
-                      className="form-control"
-                      placeholder="e.g., 1"
                     />
                   </div>
                 </div>
@@ -230,7 +233,20 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     className="form-control"
-                    placeholder="e.g., Campus Lawn"
+                    placeholder="e.g., Campus Lawn, Auditorium A, etc."
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="roomId">Room ID (optional)</label>
+                  <input
+                    type="number"
+                    id="roomId"
+                    value={roomId}
+                    onChange={(e) => setRoomId(e.target.value)}
+                    className="form-control"
+                    placeholder="e.g., 1 for Auditorium A"
+                    min="1"
                   />
                   <small className="form-text">
                     Room IDs: 1=Auditorium A, 2=Conference Room B, 3=Lab 101, 4=Hall C, 5=Seminar Room D
@@ -242,14 +258,18 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
             <button
               type="submit"
               disabled={submitting}
-              className="btn-submit-request-alt"
+              className="btn-submit-request"
+              style={{
+                backgroundColor: submitting ? '#6c757d' : '#1a73e8',
+                cursor: submitting ? 'not-allowed' : 'pointer'
+              }}
             >
               {submitting ? 'Submitting...' : 'Submit Request'}
             </button>
           </form>
         </div>
 
-        {/* Keep your existing request types section */}
+        {/* Existing request types section (keep your UI) */}
         <div className="request-types-section">
           <h3 className="request-types-title">Request Types</h3>
           
@@ -257,21 +277,21 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
             <div className="request-type-card">
               <h4 className="card-title">Book a room</h4>
               <p className="card-description">
-                Request funding, book rooms, or submit new event proposals to the SU
+                Reserve rooms like Auditorium A or Lab 101 for your club activities
               </p>
             </div>
             
             <div className="request-type-card">
               <h4 className="card-title">Request funding</h4>
               <p className="card-description">
-                See all scheduled club activities and avoid conflicts with other events
+                Apply for budget allocation for events, materials, or competitions
               </p>
             </div>
             
             <div className="request-type-card">
               <h4 className="card-title">New event request</h4>
               <p className="card-description">
-                Track the status of your submitted requests and approvals
+                Propose and schedule new club events with full details
               </p>
             </div>
           </div>
