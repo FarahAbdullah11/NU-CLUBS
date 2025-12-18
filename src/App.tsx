@@ -13,28 +13,36 @@ function AppContent() {
 
   // Check if user is already logged in (via localStorage)
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      setIsLoggedIn(true);
+    const userData = localStorage.getItem('userData');
+    if (userData) {
+      try {
+        // Verify it's valid JSON before trusting it
+        JSON.parse(userData);
+        setIsLoggedIn(true);
+      } catch (e) {
+        // If corrupted, clear it
+        localStorage.removeItem('userData');
+      }
     }
   }, []);
 
   // Handle successful login
   const handleLogin = async (identifier: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      // ✅ Correct URL: port 5000, no /auth
+      const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ identifier, password }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('userData', JSON.stringify(data.user));
+        // ✅ Store user data directly (no token needed for now)
+        localStorage.setItem('userData', JSON.stringify(data));
         setIsLoggedIn(true);
         navigate('/');
       } else {
@@ -42,13 +50,13 @@ function AppContent() {
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert('Connection error. Please make sure the server is running.');
+      alert('Connection error. Please make sure the Flask server is running on http://localhost:5000');
     }
   };
 
   // Handle logout
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData'); // ✅ Remove userData, not authToken
     setIsLoggedIn(false);
     navigate('/login');
   };
