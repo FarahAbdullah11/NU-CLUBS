@@ -1,3 +1,4 @@
+// src/pages/ClubDashboard.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './ClubDashboard.css';
@@ -23,7 +24,9 @@ interface DashboardMetrics {
 interface Notification {
   notification_id: number;
   title: string;
-  message: string;
+  type: string;
+  status: string;
+  created_at: string;
   is_read: boolean;
 }
 
@@ -48,105 +51,114 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
+      const userDataStr = localStorage.getItem('userData');
+      if (!userDataStr) {
         navigate('/login');
         return;
       }
 
-      // Fetch user data
-      const userResponse = await fetch('http://localhost:3001/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const userData = JSON.parse(userDataStr);
+      setUserData(userData);
+
+      // Set club name and logo based on club_id
+      let clubName = 'Club';
+      let logoUrl = '';
+      let totalMembers = 0;
+      
+      if (userData.club_id === 1) {
+        clubName = 'NIMUN';
+        logoUrl = '/nimun-logo.jpg';
+        totalMembers = 45;
+      } else if (userData.club_id === 2) {
+        clubName = 'RPM';
+        logoUrl = '/rpm-logo.jpg';
+        totalMembers = 38;
+      } else if (userData.club_id === 3) {
+        clubName = 'ICPC';
+        logoUrl = '/icpc-logo.jpg';
+        totalMembers = 52;
+      } else if (userData.club_id === 4) {
+        clubName = 'IEEE';
+        logoUrl = '/ieee-logo.jpg';
+        totalMembers = 41;
+      }
+
+      setClubData({
+        club_id: userData.club_id,
+        club_name: clubName,
+        logo_url: logoUrl,
+        budget: 5000
       });
 
-      if (userResponse.ok) {
-        const user = await userResponse.json();
-        setUserData(user);
+      // Fetch requests to get metrics and latest request
+      if (userData.club_id) {
+        const requestsResponse = await fetch(`http://localhost:5000/api/clubs/${userData.club_id}/requests`);
+        if (requestsResponse.ok) {
+          const requests = await requestsResponse.json();
+          
+          // Count pending requests
+          const pendingCount = requests.filter((r: any) => r.status === 'PENDING').length;
+          
+          // Count upcoming approved events
+          const today = new Date().toISOString().split('T')[0];
+          const upcomingEvents = requests.filter((r: any) => 
+            r.status === 'APPROVED' && r.event_date && r.event_date >= today
+          ).length;
 
-        // Fetch club data if user is a club leader
-        if (user.role === 'CLUB_LEADER' && user.club_id) {
-          const clubResponse = await fetch(`http://localhost:3001/api/clubs/${user.club_id}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
+          setMetrics({
+            total_members: totalMembers,
+            pending_requests: pendingCount,
+            upcoming_events: upcomingEvents,
+            current_budget: 5000
           });
 
-          if (clubResponse.ok) {
-            const club = await clubResponse.json();
-            setClubData(club);
-          }
+          // ✅ Get ONLY the LATEST request (most recent)
+          const latestRequest = requests.length > 0 
+            ? requests.sort((a: any, b: any) => 
+                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+              )[0]
+            : null;
 
-          // Fetch dashboard metrics
-          const metricsResponse = await fetch(`http://localhost:3001/api/clubs/${user.club_id}/metrics`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
+          // ✅ Create notification ONLY for the latest request
+          const notifs = latestRequest ? [{
+            notification_id: latestRequest.request_id,
+            title: latestRequest.title,
+            type: latestRequest.type,
+            status: latestRequest.status,
+            created_at: latestRequest.created_at,
+            is_read: latestRequest.status === 'PENDING' ? false : true
+          }] : [];
 
-          if (metricsResponse.ok) {
-            const metricsData = await metricsResponse.json();
-            setMetrics(metricsData);
-          }
-
-          // Fetch notifications
-          const notificationsResponse = await fetch('http://localhost:3001/api/notifications', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (notificationsResponse.ok) {
-            const notificationsData = await notificationsResponse.json();
-            setNotifications(notificationsData);
-          }
+          setNotifications(notifs);
         }
-      } else {
-        // If token is invalid, redirect to login
-        localStorage.removeItem('authToken');
-        navigate('/login');
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      // Fallback to mock data for development
-      setClubData({
-        club_id: 1,
-        club_name: 'NIMUN',
-        logo_url: '/nimun-logo.jpg',
-        budget: 5000
-      });
-      setMetrics({
-        total_members: 50,
-        pending_requests: 5,
-        upcoming_events: 3,
-        current_budget: 5000
-      });
-      setUserData({
-        user_id: 1,
-        fullname: 'Ahmed Hassan',
-        role: 'CLUB_LEADER'
-      });
-      setNotifications([
-        { notification_id: 1, title: 'Room Booking Approved', message: 'Your request has been approved', is_read: false },
-        { notification_id: 2, title: 'Funding Request Pending', message: 'Your funding request is under review', is_read: false }
-      ]);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    // Initial load
+    fetchDashboardData();
+    
+    // Auto-refresh every 10 seconds
+    const interval = setInterval(() => {
+      fetchDashboardData();
+    }, 10000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // Club Logo Component - Dynamic based on club data
+  // Club Logo Component
   const ClubLogo = ({ size = 80, className = "" }: { size?: number; className?: string }) => {
     if (clubData?.logo_url) {
       return (
@@ -160,7 +172,6 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         />
       );
     }
-    // Fallback to default logo or text
     return (
       <div 
         className={className}
@@ -281,7 +292,6 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             </div>
           </div>
           <nav className="dashboard-header-nav">
-            {/* Navigation Links */}
             <div className="header-nav-links">
               <Link to="/" className={`header-nav-link ${location.pathname === '/' ? 'active' : ''}`}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -301,9 +311,7 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               </Link>
             </div>
 
-            {/* Notifications & User Profile */}
             <div className="header-actions">
-              {/* Notifications Icon */}
               <button className="header-notification-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" fill="none"/>
@@ -314,7 +322,6 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                 )}
               </button>
 
-              {/* User Profile */}
               <div className="header-user-profile">
                 <div className="user-avatar">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -382,38 +389,57 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
           </div>
         </section>
 
-        {/* Notifications Section */}
-        <section className="dashboard-notifications">
-          <div className="notifications-content">
-            <div className="notifications-title-container">
-              <div className="notifications-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+{/* Notifications Section */}
+<section className="dashboard-notifications">
+  <div className="notifications-content">
+    <div className="notifications-title-container">
+      <div className="notifications-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+      <h2 className="notifications-title">Notifications</h2>
+    </div>
+    <ul className="notifications-list">
+      {notifications.length > 0 ? (
+        notifications.map((notification) => (
+          <li key={notification.notification_id} className="notification-item">
+            <div className="notification-content">
+              <div className="notification-info">
+                <div className="notification-title">
+                  {notification.title}
+                </div>
+                <div className="notification-subtitle">
+                  {notification.type === 'ROOM_BOOKING' ? 'Room' : 
+                   notification.type === 'EVENT' ? 'Event' : 'Funding'} • 
+                  Submitted {new Date(notification.created_at).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                  })}
+                </div>
               </div>
-              <h2 className="notifications-title">Notifications</h2>
+              <div className="notification-status">
+                <span className={`status-badge status-${notification.status.toLowerCase()}`}>
+                  {notification.status === 'PENDING' ? 'Pending' : 
+                   notification.status === 'APPROVED' ? 'Approved' : 'Rejected'}
+                </span>
+              </div>
             </div>
-            <ul className="notifications-list">
-              {notifications.length > 0 ? (
-                notifications.slice(0, 5).map((notification) => (
-                  <li key={notification.notification_id} className="notification-item">
-                    <span className="notification-dot"></span>
-                    <span className="notification-text">{notification.title}: {notification.message}</span>
-                  </li>
-                ))
-              ) : (
-                <li className="notification-item">
-                  <span className="notification-text">No notifications</span>
-                </li>
-              )}
-            </ul>
-          </div>
-        </section>
+          </li>
+        ))
+      ) : (
+        <li className="notification-item">
+          <span className="notification-text">No notifications</span>
+        </li>
+      )}
+    </ul>
+  </div>
+</section>
       </main>
     </div>
   );
 };
 
 export default ClubDashboard;
-

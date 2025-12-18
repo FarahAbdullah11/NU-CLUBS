@@ -283,7 +283,65 @@
   min-width: 18px;
   text-align: center;
 }
+/* ===== ADD THIS TO YOUR ClubDashboard.css ===== */
 
+/* Notification Item Styling */
+.notification-item {
+  padding: 16px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.notification-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+}
+
+.notification-subtitle {
+  font-size: 14px;
+  color: #666666;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Status Badge Styling (Pill-shaped) */
+.status-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px; /* Pill shape */
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  min-width: 80px;
+  text-align: center;
+}
+
+.status-pending {
+  background-color: #fff3cd;
+  color: #d8640b;
+}
+
+.status-approved {
+  background-color: #d4edda;
+  color: #00c82f;
+}
+
+.status-rejected {
+  background-color: #f8d7da;
+  color: #8a0a16;
+}
 .header-user-profile {
   display: flex;
   align-items: center;
