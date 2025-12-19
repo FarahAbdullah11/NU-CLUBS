@@ -5,8 +5,41 @@ import LoginPage from './components/LoginPage';
 import Homepage from './pages/Homepage';
 import ClubRequests from './pages/ClubRequests';
 import Dashboard from './pages/ClubDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import ViewRequests from './pages/ViewRequests';
 import './App.css';
+
+// Dashboard Router Component - routes to AdminDashboard for SU_ADMIN, ClubDashboard for others
+const DashboardRouter: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
+  const userDataStr = localStorage.getItem('userData');
+  if (userDataStr) {
+    try {
+      const userData = JSON.parse(userDataStr);
+      if (userData.role === 'SU_ADMIN') {
+        return <AdminDashboard onLogout={onLogout} />;
+      }
+    } catch (e) {
+      // If parsing fails, default to ClubDashboard
+    }
+  }
+  return <Dashboard onLogout={onLogout} />;
+};
+
+// Admin Dashboard Guard - only allows SU_ADMIN
+const AdminDashboardGuard: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
+  const userDataStr = localStorage.getItem('userData');
+  if (userDataStr) {
+    try {
+      const userData = JSON.parse(userDataStr);
+      if (userData.role === 'SU_ADMIN') {
+        return <AdminDashboard onLogout={onLogout} />;
+      }
+    } catch (e) {
+      // If parsing fails, redirect to dashboard
+    }
+  }
+  return <Navigate to="/dashboard" replace />;
+};
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -81,11 +114,19 @@ function AppContent() {
           }
         />
 
-        {/* Dashboard Route (protected) */}
+        {/* Dashboard Route (protected) - routes to AdminDashboard for SU_ADMIN, ClubDashboard for others */}
         <Route
           path="/dashboard"
           element={
-            isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? <DashboardRouter onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Admin Dashboard Route (protected) - only for SU_ADMIN */}
+        <Route
+          path="/admin-dashboard"
+          element={
+            isLoggedIn ? <AdminDashboardGuard onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
 
