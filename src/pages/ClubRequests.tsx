@@ -270,32 +270,7 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
         </div>
 
         {/* Existing request types section (keep your UI) */}
-        <div className="request-types-section">
-          <h3 className="request-types-title">Request Types</h3>
-          
-          <div className="request-type-cards">
-            <div className="request-type-card">
-              <h4 className="card-title">Book a room</h4>
-              <p className="card-description">
-                Reserve rooms like Auditorium A or Lab 101 for your club activities
-              </p>
-            </div>
-            
-            <div className="request-type-card">
-              <h4 className="card-title">Request funding</h4>
-              <p className="card-description">
-                Apply for budget allocation for events, materials, or competitions
-              </p>
-            </div>
-            
-            <div className="request-type-card">
-              <h4 className="card-title">New event request</h4>
-              <p className="card-description">
-                Propose and schedule new club events with full details
-              </p>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </div>
   );
