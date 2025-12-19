@@ -34,9 +34,6 @@ def create_tables_on_first_request():
 
 # === Routes ===
 
-@app.route('/')
-def hello():
-    return "Hello from Flask! 🐍"
 
 @app.route('/init-hash', methods=['GET'])
 def init_hash_passwords():
