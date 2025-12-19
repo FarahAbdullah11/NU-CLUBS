@@ -1,6 +1,7 @@
 // src/pages/ClubDashboard.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Calendar from '../components/Calendar';
 import './ClubDashboard.css';
 
 interface DashboardProps {
@@ -239,42 +240,32 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               <line x1="3" y1="10" x2="17" y2="10" stroke="currentColor" strokeWidth="2"/>
               <line x1="3" y1="15" x2="17" y2="15" stroke="currentColor" strokeWidth="2"/>
             </svg>
-            <span>Requests</span>
+            <span>View my Requests</span>
           </Link>
           
           <Link 
-            to="/calendar" 
-            className={`sidebar-nav-item ${location.pathname === '/calendar' ? 'active' : ''}`}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <rect x="3" y="4" width="14" height="13" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-              <line x1="6" y1="2" x2="6" y2="6" stroke="currentColor" strokeWidth="1.5"/>
-              <line x1="14" y1="2" x2="14" y2="6" stroke="currentColor" strokeWidth="1.5"/>
-              <line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" strokeWidth="1.5"/>
-            </svg>
-            <span>Calendar</span>
-          </Link>
+  to="/#calendar" 
+  className={`sidebar-nav-item ${location.pathname === '/' && window.location.hash === '#calendar' ? 'active' : ''}`}
+  onClick={(e) => {
+    // Optional: Scroll to #calendar if already on home page
+    if (location.pathname === '/') {
+      e.preventDefault();
+      document.getElementById('calendar')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }}
+>
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <rect x="3" y="4" width="14" height="13" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+    <line x1="6" y1="2" x2="6" y2="6" stroke="currentColor" strokeWidth="1.5"/>
+    <line x1="14" y1="2" x2="14" y2="6" stroke="currentColor" strokeWidth="1.5"/>
+    <line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" strokeWidth="1.5"/>
+  </svg>
+  <span>Calendar</span>
+</Link>
           
-          <Link 
-            to="/funding" 
-            className={`sidebar-nav-item ${location.pathname === '/funding' ? 'active' : ''}`}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <text x="10" y="15" textAnchor="middle" fontSize="16" fontWeight="bold" fill="currentColor">$</text>
-            </svg>
-            <span>Funding</span>
-          </Link>
           
-          <Link 
-            to="/profile" 
-            className={`sidebar-nav-item ${location.pathname === '/profile' ? 'active' : ''}`}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <circle cx="10" cy="7" r="4" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-              <path d="M3 18 C3 14 6 11 10 11 C14 11 17 14 17 18" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-            </svg>
-            <span>Profile</span>
-          </Link>
+          
+          
         </nav>
       </aside>
 
