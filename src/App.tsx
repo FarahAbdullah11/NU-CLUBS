@@ -5,6 +5,7 @@ import LoginPage from './components/LoginPage';
 import Homepage from './pages/Homepage';
 import ClubRequests from './pages/ClubRequests';
 import Dashboard from './pages/ClubDashboard';
+import ViewRequests from './pages/ViewRequests';
 import './App.css';
 
 function AppContent() {
@@ -93,6 +94,14 @@ function AppContent() {
           path="/request"
           element={
             isLoggedIn ? <ClubRequests onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* View Requests Route (protected) */}
+        <Route
+          path="/view-requests"
+          element={
+            isLoggedIn ? <ViewRequests onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
 

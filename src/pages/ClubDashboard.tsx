@@ -232,8 +232,8 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
           </Link>
           
           <Link 
-            to="/request" 
-            className={`sidebar-nav-item ${location.pathname === '/request' ? 'active' : ''}`}
+            to="/view-requests" 
+            className={`sidebar-nav-item ${location.pathname === '/view-requests' ? 'active' : ''}`}
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <line x1="3" y1="5" x2="17" y2="5" stroke="currentColor" strokeWidth="2"/>
