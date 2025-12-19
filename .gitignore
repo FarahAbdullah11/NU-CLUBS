@@ -16,3 +16,5 @@ node_modules/
 "@ | Out-File -FilePath .gitignore -Encoding utf8
 
 git add .gitignore
+.vercel
+.env*.local
