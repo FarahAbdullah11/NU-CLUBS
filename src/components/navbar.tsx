@@ -11,16 +11,14 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onLogout }) => {
   return (
     <nav className= "navbar">
       <div className="navbar-content">
-        {/*Logo section*/}
-              <div className="navbar-logo">
-                <div className="logo-container">
-                    <div className="logo-monogram">Nu</div>
-                    <div className="logo-text">
-                        <div className="logo-english">Nile University</div>
-                        <div className="logo-arabic">جامعة النيل </div>
-                    </div>
-                </div>
-              </div>
+        {/* Logo Section - Image */}
+          <div className="navbar-logo">
+          <img 
+          src="/Nile_University_logo.png" 
+          alt="Nile University Logo" 
+          className="logo-image"
+          />
+          </div>
 
               
               

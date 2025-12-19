@@ -40,20 +40,18 @@
     flex-direction: column;
   }
   
-  .logo-english {
-    font-size: 14px;
-    font-weight: 600;
-    color: #007AC3;
-    line-height: 1.2;
-  }
-  
-  .logo-arabic {
-    font-size: 12px;
-    font-weight: 600;
-    color: #007AC3;
-    line-height: 1.2;
-    direction: rtl;
-  }
+
+
+  /* Logo Image */
+.logo-image {
+  height: 60px; /* Adjust as needed */
+  width: auto;
+  object-fit: contain;
+  border: 2px solid #1e3a8a;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: white;
+}
   
   /* CLUBS Title */
   .navbar-title {
