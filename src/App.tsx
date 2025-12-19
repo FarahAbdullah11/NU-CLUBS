@@ -6,10 +6,11 @@ import Homepage from './pages/Homepage';
 import ClubRequests from './pages/ClubRequests';
 import Dashboard from './pages/ClubDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import StudentLifeAdminDashboard from './pages/StudentLifeAdminDashboard';
 import ViewRequests from './pages/ViewRequests';
 import './App.css';
 
-// Dashboard Router Component - routes to AdminDashboard for SU_ADMIN, ClubDashboard for others
+// Dashboard Router Component - routes to appropriate dashboard based on role
 const DashboardRouter: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
   const userDataStr = localStorage.getItem('userData');
   if (userDataStr) {
@@ -17,6 +18,9 @@ const DashboardRouter: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
       const userData = JSON.parse(userDataStr);
       if (userData.role === 'SU_ADMIN') {
         return <AdminDashboard onLogout={onLogout} />;
+      }
+      if (userData.role === 'STUDENT_LIFE_ADMIN') {
+        return <StudentLifeAdminDashboard onLogout={onLogout} />;
       }
     } catch (e) {
       // If parsing fails, default to ClubDashboard
@@ -33,6 +37,22 @@ const AdminDashboardGuard: React.FC<{ onLogout?: () => void }> = ({ onLogout }) 
       const userData = JSON.parse(userDataStr);
       if (userData.role === 'SU_ADMIN') {
         return <AdminDashboard onLogout={onLogout} />;
+      }
+    } catch (e) {
+      // If parsing fails, redirect to dashboard
+    }
+  }
+  return <Navigate to="/dashboard" replace />;
+};
+
+// Student Life Admin Dashboard Guard - only allows STUDENT_LIFE_ADMIN
+const StudentLifeAdminDashboardGuard: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
+  const userDataStr = localStorage.getItem('userData');
+  if (userDataStr) {
+    try {
+      const userData = JSON.parse(userDataStr);
+      if (userData.role === 'STUDENT_LIFE_ADMIN') {
+        return <StudentLifeAdminDashboard onLogout={onLogout} />;
       }
     } catch (e) {
       // If parsing fails, redirect to dashboard
@@ -130,6 +150,14 @@ function AppContent() {
           }
         />
 
+        {/* Student Life Admin Dashboard Route (protected) - only for STUDENT_LIFE_ADMIN */}
+        <Route
+          path="/student-life-dashboard"
+          element={
+            isLoggedIn ? <StudentLifeAdminDashboardGuard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
         {/* Club Requests Route (protected) */}
         <Route
           path="/request"
@@ -146,27 +174,27 @@ function AppContent() {
           }
         />
 
-        {/* Calendar Route (protected) - placeholder for now */}
+        {/* Calendar Route (protected) - uses DashboardRouter */}
         <Route
           path="/calendar"
           element={
-            isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? <DashboardRouter onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
 
-        {/* Funding Route (protected) - placeholder for now */}
+        {/* Funding Route (protected) - uses DashboardRouter */}
         <Route
           path="/funding"
           element={
-            isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? <DashboardRouter onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
 
-        {/* Profile Route (protected) - placeholder for now */}
+        {/* Profile Route (protected) - uses DashboardRouter */}
         <Route
           path="/profile"
           element={
-            isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? <DashboardRouter onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
 

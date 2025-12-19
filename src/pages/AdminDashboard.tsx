@@ -53,7 +53,11 @@ const AdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       const userData = JSON.parse(userDataStr);
       setUserData(userData);
 
-      // Verify user is SU_ADMIN
+      // Verify user is SU_ADMIN only - redirect STUDENT_LIFE_ADMIN to their dashboard
+      if (userData.role === 'STUDENT_LIFE_ADMIN') {
+        navigate('/student-life-dashboard');
+        return;
+      }
       if (userData.role !== 'SU_ADMIN') {
         navigate('/dashboard');
         return;
@@ -109,6 +113,22 @@ const AdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     }
   };
 
+  // Immediate check on mount - redirect STUDENT_LIFE_ADMIN users
+  useEffect(() => {
+    const userDataStr = localStorage.getItem('userData');
+    if (userDataStr) {
+      try {
+        const userData = JSON.parse(userDataStr);
+        if (userData.role === 'STUDENT_LIFE_ADMIN') {
+          navigate('/student-life-dashboard', { replace: true });
+          return;
+        }
+      } catch (e) {
+        // If parsing fails, continue
+      }
+    }
+  }, [navigate]);
+
   useEffect(() => {
     // Initial load
     fetchDashboardData();
@@ -125,6 +145,20 @@ const AdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  // Early return if user is STUDENT_LIFE_ADMIN - prevent rendering
+  const userDataStrCheck = localStorage.getItem('userData');
+  if (userDataStrCheck) {
+    try {
+      const userDataCheck = JSON.parse(userDataStrCheck);
+      if (userDataCheck.role === 'STUDENT_LIFE_ADMIN') {
+        // Redirect will happen in useEffect, but prevent rendering
+        return null;
+      }
+    } catch (e) {
+      // Continue if parsing fails
+    }
+  }
 
   if (loading) {
     return (
@@ -156,7 +190,9 @@ const AdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                 SU
               </div>
             </div>
-            <h2 className="sidebar-title">STUDENT UNION</h2>
+            <h2 className="sidebar-title">
+              STUDENT UNION
+            </h2>
           </div>
         </div>
         
@@ -217,7 +253,7 @@ const AdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                 width: '40px', 
                 height: '40px', 
                 borderRadius: '50%',
-                backgroundColor: '#1e3a8a',
+                backgroundColor: '#1e2e8a',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -229,7 +265,11 @@ const AdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               </div>
             </div>
             <div className="dashboard-header-title-container">
-              <h1 className="dashboard-header-title">STUDENT UNION</h1>
+              <h1 className="dashboard-header-title">
+                {userData?.role === 'SU_ADMIN' ? 'STUDENT UNION' : 
+                 userData?.role === 'STUDENT_LIFE_ADMIN' ? 'STUDENT LIFE' : 
+                 'ADMIN'}
+              </h1>
               <p className="dashboard-header-subtitle">Admin Dashboard</p>
             </div>
           </div>
@@ -273,7 +313,9 @@ const AdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                 </div>
                 <div className="user-info">
                   <span className="user-name">{userData?.fullname || 'User'}</span>
-                  <span className="user-role">Student Union Admin</span>
+                  <span className="user-role">
+                    Student Union Admin
+                  </span>
                 </div>
                 <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2" fill="none"/>

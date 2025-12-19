@@ -122,7 +122,7 @@ def get_club_requests(club_id):
 
 @app.route('/api/admin/requests', methods=['GET'])
 def get_all_requests():
-    """Get all requests from all clubs - only accessible by SU_ADMIN"""
+    """Get all requests from all clubs - only accessible by SU_ADMIN or STUDENT_LIFE_ADMIN"""
     # Get user_id from query parameter or header (for now, we'll use query param)
     # In production, you'd want to use proper authentication tokens
     user_id = request.args.get('user_id', type=int)
@@ -130,8 +130,8 @@ def get_all_requests():
         return jsonify({'error': 'User ID required'}), 401
     
     user = User.query.get(user_id)
-    if not user or user.role != 'SU_ADMIN':
-        return jsonify({'error': 'Only SU_ADMIN can access all requests'}), 403
+    if not user or (user.role != 'SU_ADMIN' and user.role != 'STUDENT_LIFE_ADMIN'):
+        return jsonify({'error': 'Only admins can access all requests'}), 403
     
     # Get all requests with club information
     requests = Request.query.join(Club, Request.club_id == Club.club_id).all()
