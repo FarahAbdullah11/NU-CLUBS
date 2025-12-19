@@ -1,0 +1,32 @@
+/* Footer styles */
+.footer {
+  background-color: #007ac3;
+  color: #ffffff;
+  padding: 0.5rem 0;
+  margin-top: auto;
+  border-top: 1px solid #0066a3;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.copyright {
+  margin: 0;
+  font-size: 32px;
+  color: #ffffff;
+  margin-top: 26px;
+  font-weight: 700;
+}
+
+.details {
+    margin: 0;
+    font-size:92%;
+    color: #ffffff;
+    font-weight: 700;
+    text-align: right;
+    margin-top: -52px;
+    margin-bottom: 12px;
+}
