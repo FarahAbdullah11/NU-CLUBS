@@ -6,7 +6,9 @@ import Homepage from './pages/Homepage';
 import ClubRequests from './pages/ClubRequests';
 import Dashboard from './pages/ClubDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminViewRequests from './pages/AdminViewRequests';
 import StudentLifeAdminDashboard from './pages/StudentLifeAdminDashboard';
+import StudentLifeViewRequests from './pages/StudentLifeViewRequests';
 import ViewRequests from './pages/ViewRequests';
 import './App.css';
 
@@ -53,6 +55,38 @@ const StudentLifeAdminDashboardGuard: React.FC<{ onLogout?: () => void }> = ({ o
       const userData = JSON.parse(userDataStr);
       if (userData.role === 'STUDENT_LIFE_ADMIN') {
         return <StudentLifeAdminDashboard onLogout={onLogout} />;
+      }
+    } catch (e) {
+      // If parsing fails, redirect to dashboard
+    }
+  }
+  return <Navigate to="/dashboard" replace />;
+};
+
+// Admin View Requests Guard - only allows SU_ADMIN
+const AdminViewRequestsGuard: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
+  const userDataStr = localStorage.getItem('userData');
+  if (userDataStr) {
+    try {
+      const userData = JSON.parse(userDataStr);
+      if (userData.role === 'SU_ADMIN') {
+        return <AdminViewRequests onLogout={onLogout} />;
+      }
+    } catch (e) {
+      // If parsing fails, redirect to dashboard
+    }
+  }
+  return <Navigate to="/dashboard" replace />;
+};
+
+// Student Life View Requests Guard - only allows STUDENT_LIFE_ADMIN
+const StudentLifeViewRequestsGuard: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
+  const userDataStr = localStorage.getItem('userData');
+  if (userDataStr) {
+    try {
+      const userData = JSON.parse(userDataStr);
+      if (userData.role === 'STUDENT_LIFE_ADMIN') {
+        return <StudentLifeViewRequests onLogout={onLogout} />;
       }
     } catch (e) {
       // If parsing fails, redirect to dashboard
@@ -171,6 +205,22 @@ function AppContent() {
           path="/view-requests"
           element={
             isLoggedIn ? <ViewRequests onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Admin View Requests Route (protected) - only for SU_ADMIN */}
+        <Route
+          path="/admin-requests"
+          element={
+            isLoggedIn ? <AdminViewRequestsGuard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Student Life View Requests Route (protected) - only for STUDENT_LIFE_ADMIN */}
+        <Route
+          path="/student-life-requests"
+          element={
+            isLoggedIn ? <StudentLifeViewRequestsGuard onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
 
