@@ -9,5 +9,6 @@ services:
     envVars:
       - key: PORT
         fromService:
+          type: web           # ← THIS WAS MISSING!
           name: nu-clubs-backend
           property: port
