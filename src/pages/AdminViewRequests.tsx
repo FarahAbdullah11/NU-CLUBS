@@ -205,68 +205,7 @@ const AdminViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
       {/* Main Content Area */}
       <main className={`dashboard-main ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         {/* Top Navigation Bar */}
-        <header className="dashboard-header">
-          <div className="dashboard-header-left" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
-            <div className="header-logo-small">
-              <div style={{ 
-                width: '40px', 
-                height: '40px', 
-                borderRadius: '50%',
-                backgroundColor: '#1e2e8a',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '1rem',
-                fontWeight: 'bold'
-              }}>
-                SU
-              </div>
-            </div>
-            <div className="dashboard-header-title-container">
-              <h1 className="dashboard-header-title">STUDENT UNION</h1>
-              <p className="dashboard-header-subtitle">View All Requests</p>
-            </div>
-          </div>
-          <nav className="dashboard-header-nav">
-            <div className="header-nav-links">
-              <Link to="/" className={`header-nav-link ${location.pathname === '/' ? 'active' : ''}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-                <span>Home</span>
-              </Link>
-              <Link to="/admin-dashboard" className={`header-nav-link ${location.pathname === '/admin-dashboard' ? 'active' : ''}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <rect x="2" y="2" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <rect x="16" y="2" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <rect x="2" y="16" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <rect x="16" y="16" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-                <span>Dashboard</span>
-              </Link>
-            </div>
-
-            <div className="header-actions">
-              <div className="header-user-profile">
-                <div className="user-avatar">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                  </svg>
-                </div>
-                <div className="user-info">
-                  <span className="user-name">{userData?.fullname || 'User'}</span>
-                  <span className="user-role">Student Union Admin</span>
-                </div>
-                <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-              </div>
-            </div>
-          </nav>
-        </header>
+        
 
         {/* Requests Section */}
         <section className="view-requests-section">
