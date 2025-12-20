@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminViewRequests from './pages/AdminViewRequests';
 import StudentLifeAdminDashboard from './pages/StudentLifeAdminDashboard';
 import StudentLifeViewRequests from './pages/StudentLifeViewRequests';
+import StudentLifeEditRequests from './pages/StudentLifeEditRequests';
 import ViewRequests from './pages/ViewRequests';
 import './App.css';
 
@@ -87,6 +88,22 @@ const StudentLifeViewRequestsGuard: React.FC<{ onLogout?: () => void }> = ({ onL
       const userData = JSON.parse(userDataStr);
       if (userData.role === 'STUDENT_LIFE_ADMIN') {
         return <StudentLifeViewRequests onLogout={onLogout} />;
+      }
+    } catch (e) {
+      // If parsing fails, redirect to dashboard
+    }
+  }
+  return <Navigate to="/dashboard" replace />;
+};
+
+// Student Life Edit Requests Guard - only allows STUDENT_LIFE_ADMIN
+const StudentLifeEditRequestsGuard: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
+  const userDataStr = localStorage.getItem('userData');
+  if (userDataStr) {
+    try {
+      const userData = JSON.parse(userDataStr);
+      if (userData.role === 'STUDENT_LIFE_ADMIN') {
+        return <StudentLifeEditRequests onLogout={onLogout} />;
       }
     } catch (e) {
       // If parsing fails, redirect to dashboard
@@ -221,6 +238,14 @@ function AppContent() {
           path="/student-life-requests"
           element={
             isLoggedIn ? <StudentLifeViewRequestsGuard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Student Life Edit Requests Route (protected) - only for STUDENT_LIFE_ADMIN */}
+        <Route
+          path="/student-life-edit-requests"
+          element={
+            isLoggedIn ? <StudentLifeEditRequestsGuard onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         />
 
