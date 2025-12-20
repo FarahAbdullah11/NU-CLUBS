@@ -14,11 +14,15 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onLogout }) => {
         {/*Logo section*/}
               <div className="navbar-logo">
                 <div className="logo-container">
-                    <div className="logo-monogram">Nu</div>
-                    <div className="logo-text">
-                        <div className="logo-english">Nile University</div>
-                        <div className="logo-arabic">جامعة النيل </div>
-                    </div>
+                    <img 
+                      src="/Nile_University_logo.png" 
+                      alt="Nile University Logo" 
+                      className="logo-image"
+                      onError={(e) => {
+                        console.error('Logo image failed to load');
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
                 </div>
               </div>
 

@@ -3,6 +3,11 @@
     width: 100%;
     padding: 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
   }
   
   .navbar-content {
@@ -15,44 +20,37 @@
   
   /* Logo Section */
   .navbar-logo {
-    display: flex;
+    display: flex !important;
     align-items: center;
+    flex-shrink: 0;
+    height: 100%;
+    width: auto;
   }
   
   .logo-container {
-    display: flex;
+    display: flex !important;
     align-items: center;
-    border: 2px solid #1e3a8a;
+    justify-content: flex-start;
+    border: none;
     padding: 8px 16px;
     border-radius: 4px;
+    background-color: transparent;
+    height: 66px; /* Match navbar height */
+    min-width: 150px;
+    width: auto;
+    overflow: visible;
   }
   
-  .logo-monogram {
-    font-size: 24px;
-    font-weight: 700;
-    color: #007AC3;
-    margin-right: 12px;
-    line-height: 1;
-  }
-  
-  .logo-text {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .logo-english {
-    font-size: 14px;
-    font-weight: 600;
-    color: #007AC3;
-    line-height: 1.2;
-  }
-  
-  .logo-arabic {
-    font-size: 12px;
-    font-weight: 600;
-    color: #007AC3;
-    line-height: 1.2;
-    direction: rtl;
+  .logo-image {
+    height: 50px !important;
+    width: auto !important;
+    max-width: 200px;
+    min-width: 100px;
+    object-fit: contain;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex-shrink: 0;
   }
   
   /* CLUBS Title */
@@ -95,7 +93,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background-color: #1e3a8a;
+    background-color: #007AC3;
   }
 
   .nav-logout-button {

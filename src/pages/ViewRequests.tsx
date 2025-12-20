@@ -1,6 +1,7 @@
 // src/pages/ViewRequests.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import NavigationBar from '../components/Navbar';
 import './ClubDashboard.css';
 import './ViewRequests.css';
 
@@ -180,6 +181,7 @@ const ViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
 
   return (
     <div className="dashboard-container">
+      <NavigationBar onLogout={onLogout} />
       {/* Left Sidebar */}
       <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">

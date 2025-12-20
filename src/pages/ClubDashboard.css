@@ -118,7 +118,7 @@
   background-color: #ffffff;
   min-height: 100vh;
   transition: margin-left 0.3s ease-in-out;
-  padding-top: 80px; /* space for fixed header */
+  padding-top: 160px; /* space for navbar + fixed header */
 }
 
 .dashboard-main.sidebar-closed {
@@ -132,7 +132,7 @@
 /* =============== TOP HEADER =============== */
 .dashboard-header {
   position: fixed;
-  top: 0;
+  top: 80px; /* Position below navbar */
   left: 250px;
   right: 0;
   display: flex;

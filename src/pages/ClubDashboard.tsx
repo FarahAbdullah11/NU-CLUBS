@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Calendar from '../components/Calendar';
 import './ClubDashboard.css';
+import NavigationBar from '../components/Navbar';
 
 interface DashboardProps {
   onLogout?: () => void;
@@ -206,6 +207,7 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
   return (
     <div className="dashboard-container">
+      <NavigationBar onLogout={onLogout} />
       {/* Left Sidebar */}
       <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
@@ -272,65 +274,7 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       {/* Main Content Area */}
       <main className={`dashboard-main ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         {/* Top Navigation Bar */}
-        <header className="dashboard-header">
-          <div className="dashboard-header-left" onClick={toggleSidebar} style={{ cursor: 'pointer' }}>
-            <div className="header-logo-small">
-              <ClubLogo size={40} className="" />
-            </div>
-            <div className="dashboard-header-title-container">
-              <h1 className="dashboard-header-title">{clubData?.club_name || 'Club'}</h1>
-              <p className="dashboard-header-subtitle">Club Dashboard</p>
-            </div>
-          </div>
-          <nav className="dashboard-header-nav">
-            <div className="header-nav-links">
-              <Link to="/" className={`header-nav-link ${location.pathname === '/' ? 'active' : ''}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-                <span>Home</span>
-              </Link>
-              <Link to="/dashboard" className={`header-nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <rect x="2" y="2" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <rect x="16" y="2" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <rect x="2" y="16" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <rect x="16" y="16" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-                <span>Dashboard</span>
-              </Link>
-            </div>
-
-            <div className="header-actions">
-              <button className="header-notification-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-                {unreadNotifications > 0 && (
-                  <span className="notification-badge">{unreadNotifications}</span>
-                )}
-              </button>
-
-              <div className="header-user-profile">
-                <div className="user-avatar">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                  </svg>
-                </div>
-                <div className="user-info">
-                  <span className="user-name">{userData?.fullname || 'User'}</span>
-                  <span className="user-role">{userData?.role === 'CLUB_LEADER' ? 'Club Leader' : userData?.role || 'User'}</span>
-                </div>
-                <svg className="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2" fill="none"/>
-                </svg>
-              </div>
-            </div>
-          </nav>
-        </header>
+        
 
         {/* Key Metrics Section */}
         <section className="dashboard-metrics">

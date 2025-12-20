@@ -1,6 +1,7 @@
 // src/pages/StudentLifeAdminDashboard.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import NavigationBar from '../components/Navbar';
 import './StudentLifeAdminDashboard.css';
 
 interface DashboardProps {
@@ -172,6 +173,7 @@ const StudentLifeAdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
   return (
     <div className="dashboard-container student-life-admin-dashboard">
+      <NavigationBar onLogout={onLogout} />
       {/* Left Sidebar */}
       <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
