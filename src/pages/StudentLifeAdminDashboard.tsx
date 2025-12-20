@@ -219,17 +219,7 @@ const StudentLifeAdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               <line x1="3" y1="10" x2="17" y2="10" stroke="currentColor" strokeWidth="2"/>
               <line x1="3" y1="15" x2="17" y2="15" stroke="currentColor" strokeWidth="2"/>
             </svg>
-            <span>View My Requests</span>
-          </Link>
-          
-          <Link 
-            to="/student-life-edit-requests" 
-            className={`sidebar-nav-item ${location.pathname === '/student-life-edit-requests' ? 'active' : ''}`}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M11 4H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5M14.5 1.5L18.5 5.5M18.5 5.5L14.5 9.5M18.5 5.5H8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>Edit Requests</span>
+            <span>View and Edit All Requests</span>
           </Link>
           
           <Link 
