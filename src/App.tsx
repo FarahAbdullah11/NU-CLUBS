@@ -14,14 +14,14 @@ import './App.css';
 
 // Dashboard Router Component - routes to appropriate dashboard based on role
 const DashboardRouter: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
-  const userDataStr = localStorage.getItem('userData');
+  const userDataStr = localStorage.getItem("userData");
   if (userDataStr) {
     try {
       const userData = JSON.parse(userDataStr);
-      if (userData.role === 'SU_ADMIN') {
+      if (userData.role === "SU_ADMIN") {
         return <AdminDashboard onLogout={onLogout} />;
       }
-      if (userData.role === 'STUDENT_LIFE_ADMIN') {
+      if (userData.role === "STUDENT_LIFE_ADMIN") {
         return <StudentLifeAdminDashboard onLogout={onLogout} />;
       }
     } catch (e) {
@@ -32,12 +32,14 @@ const DashboardRouter: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
 };
 
 // Admin Dashboard Guard - only allows SU_ADMIN
-const AdminDashboardGuard: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
-  const userDataStr = localStorage.getItem('userData');
+const AdminDashboardGuard: React.FC<{ onLogout?: () => void }> = ({
+  onLogout,
+}) => {
+  const userDataStr = localStorage.getItem("userData");
   if (userDataStr) {
     try {
       const userData = JSON.parse(userDataStr);
-      if (userData.role === 'SU_ADMIN') {
+      if (userData.role === "SU_ADMIN") {
         return <AdminDashboard onLogout={onLogout} />;
       }
     } catch (e) {
@@ -47,14 +49,70 @@ const AdminDashboardGuard: React.FC<{ onLogout?: () => void }> = ({ onLogout }) 
   return <Navigate to="/dashboard" replace />;
 };
 
-// Admin View Requests Guard - only allows SU_ADMIN
-const AdminViewRequestsGuard: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
-  const userDataStr = localStorage.getItem('userData');
+// Student Life Admin Dashboard Guard - only allows STUDENT_LIFE_ADMIN
+const StudentLifeAdminDashboardGuard: React.FC<{ onLogout?: () => void }> = ({
+  onLogout,
+}) => {
+  const userDataStr = localStorage.getItem("userData");
   if (userDataStr) {
     try {
       const userData = JSON.parse(userDataStr);
-      if (userData.role === 'SU_ADMIN') {
+      if (userData.role === "STUDENT_LIFE_ADMIN") {
+        return <StudentLifeAdminDashboard onLogout={onLogout} />;
+      }
+    } catch (e) {
+      // If parsing fails, redirect to dashboard
+    }
+  }
+  return <Navigate to="/dashboard" replace />;
+};
+
+// Admin View Requests Guard - only allows SU_ADMIN
+const AdminViewRequestsGuard: React.FC<{ onLogout?: () => void }> = ({
+  onLogout,
+}) => {
+  const userDataStr = localStorage.getItem("userData");
+  if (userDataStr) {
+    try {
+      const userData = JSON.parse(userDataStr);
+      if (userData.role === "SU_ADMIN") {
         return <AdminViewRequests onLogout={onLogout} />;
+      }
+    } catch (e) {
+      // If parsing fails, redirect to dashboard
+    }
+  }
+  return <Navigate to="/dashboard" replace />;
+};
+
+// Student Life View Requests Guard - only allows STUDENT_LIFE_ADMIN
+const StudentLifeViewRequestsGuard: React.FC<{ onLogout?: () => void }> = ({
+  onLogout,
+}) => {
+  const userDataStr = localStorage.getItem("userData");
+  if (userDataStr) {
+    try {
+      const userData = JSON.parse(userDataStr);
+      if (userData.role === "STUDENT_LIFE_ADMIN") {
+        return <StudentLifeViewRequests onLogout={onLogout} />;
+      }
+    } catch (e) {
+      // If parsing fails, redirect to dashboard
+    }
+  }
+  return <Navigate to="/dashboard" replace />;
+};
+
+// Student Life Edit Requests Guard - only allows SU_ADMIN
+const StudentLifeEditRequestsGuard: React.FC<{ onLogout?: () => void }> = ({
+  onLogout,
+}) => {
+  const userDataStr = localStorage.getItem("userData");
+  if (userDataStr) {
+    try {
+      const userData = JSON.parse(userDataStr);
+      if (userData.role === "SU_ADMIN") {
+        return <StudentLifeEditRequests onLogout={onLogout} />;
       }
     } catch (e) {
       // If parsing fails, redirect to dashboard
@@ -68,7 +126,7 @@ function AppContent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = localStorage.getItem('userData');
+    const userData = localStorage.getItem("userData");
     if (userData) {
       try {
         JSON.parse(userData);
@@ -90,22 +148,25 @@ function AppContent() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('userData', JSON.stringify(data));
+        // ✅ Store user data directly (no token needed for now)
+        localStorage.setItem("userData", JSON.stringify(data));
         setIsLoggedIn(true);
-        navigate('/');
+        navigate("/");
       } else {
-        alert(data.error || 'Login failed. Please check your credentials.');
+        alert(data.error || "Login failed. Please check your credentials.");
       }
     } catch (error) {
-      console.error('Login error:', error);
-      alert('Connection error. Please make sure the Flask server is running on http://localhost:5000');
+      console.error("Login error:", error);
+      alert(
+        "Connection error. Please make sure the Flask server is running on http://localhost:5000"
+      );
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('userData');
+    localStorage.removeItem("userData"); // ✅ Remove userData, not authToken
     setIsLoggedIn(false);
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -114,28 +175,44 @@ function AppContent() {
         <Route
           path="/login"
           element={
-            isLoggedIn ? <Navigate to="/" replace /> : <LoginPage onLogin={handleLogin} />
+            isLoggedIn ? (
+              <Navigate to="/" replace />
+            ) : (
+              <LoginPage onLogin={handleLogin} />
+            )
           }
         />
 
         <Route
           path="/"
           element={
-            isLoggedIn ? <Homepage onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? (
+              <Homepage onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
         <Route
           path="/dashboard"
           element={
-            isLoggedIn ? <DashboardRouter onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? (
+              <DashboardRouter onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
         <Route
           path="/admin-dashboard"
           element={
-            isLoggedIn ? <AdminDashboardGuard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? (
+              <AdminDashboardGuard onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
@@ -149,14 +226,22 @@ function AppContent() {
         <Route
           path="/request"
           element={
-            isLoggedIn ? <ClubRequests onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? (
+              <ClubRequests onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
         <Route
           path="/view-requests"
           element={
-            isLoggedIn ? <ViewRequests onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? (
+              <ViewRequests onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
@@ -164,7 +249,11 @@ function AppContent() {
         <Route
           path="/admin-requests"
           element={
-            isLoggedIn ? <AdminViewRequestsGuard onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? (
+              <AdminViewRequestsGuard onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
@@ -179,21 +268,33 @@ function AppContent() {
         <Route
           path="/calendar"
           element={
-            isLoggedIn ? <DashboardRouter onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? (
+              <DashboardRouter onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
         <Route
           path="/funding"
           element={
-            isLoggedIn ? <DashboardRouter onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? (
+              <DashboardRouter onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
         <Route
           path="/profile"
           element={
-            isLoggedIn ? <DashboardRouter onLogout={handleLogout} /> : <Navigate to="/login" replace />
+            isLoggedIn ? (
+              <DashboardRouter onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
