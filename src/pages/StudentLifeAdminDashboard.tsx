@@ -223,16 +223,6 @@ const StudentLifeAdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
           </Link>
           
           <Link 
-            to="/student-life-edit-requests" 
-            className={`sidebar-nav-item ${location.pathname === '/student-life-edit-requests' ? 'active' : ''}`}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M11 4H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5M14.5 1.5L18.5 5.5M18.5 5.5L14.5 9.5M18.5 5.5H8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>Edit Requests</span>
-          </Link>
-          
-          <Link 
             to="/#calendar" 
             className={`sidebar-nav-item ${location.pathname === '/' && window.location.hash === '#calendar' ? 'active' : ''}`}
             onClick={(e) => {
