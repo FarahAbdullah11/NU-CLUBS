@@ -1,4 +1,4 @@
-// src/pages/StudentLifeViewRequests.tsx
+// src/pages/StudentLifeEditRequests.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import NavigationBar from '../components/Navbar';
@@ -26,7 +26,7 @@ interface UserData {
   role: string;
 }
 
-const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
+const StudentLifeEditRequests: React.FC<DashboardProps> = ({ onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -35,6 +35,7 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [error, setError] = useState<string | null>(null);
+  const [updatingRequestId, setUpdatingRequestId] = useState<number | null>(null);
 
   const fetchRequests = async () => {
     try {
@@ -58,7 +59,7 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
       
       if (requestsResponse.ok) {
         const requestsData = await requestsResponse.json();
-        console.log('Fetched requests:', requestsData); // Debug log
+        console.log('Fetched requests:', requestsData);
         // Sort by created_at descending (newest first)
         const sortedRequests = requestsData.sort((a: Request, b: Request) => 
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -80,8 +81,39 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
     }
   };
 
+  const updateRequestStatus = async (requestId: number, status: 'APPROVED' | 'REJECTED') => {
+    if (!userData) return;
+
+    setUpdatingRequestId(requestId);
+    try {
+      const response = await fetch(`http://localhost:5000/api/admin/requests/${requestId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userData.user_id,
+          status: status
+        })
+      });
+
+      if (response.ok) {
+        // Refresh the requests list
+        await fetchRequests();
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        alert(`Failed to update request: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error updating request status:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setUpdatingRequestId(null);
+    }
+  };
+
   useEffect(() => {
-    console.log('StudentLifeViewRequests component mounted');
+    console.log('StudentLifeEditRequests component mounted');
     fetchRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -214,15 +246,12 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
 
       {/* Main Content Area */}
       <main className={`dashboard-main ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-        {/* Top Navigation Bar */}
-        
-
         {/* Requests Section */}
         <section className="view-requests-section">
           <div className="view-requests-header">
-            <h2 className="view-requests-title">All Club Requests</h2>
+            <h2 className="view-requests-title">Edit All Club Requests</h2>
             <p className="view-requests-subtitle">
-              Monitor all requests submitted by all clubs (Read-only view)
+              Review and approve or reject requests from all clubs
             </p>
           </div>
 
@@ -303,15 +332,77 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
                       </div>
                     </div>
                     <div className="request-card-footer">
-                      <span className="request-submitted-date">
-                        Submitted {new Date(request.created_at).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })} by {request.club_name || 'Unknown Club'}
-                      </span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span className="request-submitted-date">
+                          Submitted {new Date(request.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })} by {request.club_name || 'Unknown Club'}
+                        </span>
+                        {request.status === 'PENDING' && (
+                          <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <button
+                              onClick={() => updateRequestStatus(request.request_id, 'APPROVED')}
+                              disabled={updatingRequestId === request.request_id}
+                              style={{
+                                padding: '0.5rem 1rem',
+                                backgroundColor: '#10b981',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                fontSize: '0.875rem',
+                                fontWeight: 600,
+                                cursor: updatingRequestId === request.request_id ? 'not-allowed' : 'pointer',
+                                opacity: updatingRequestId === request.request_id ? 0.6 : 1,
+                                transition: 'background-color 0.2s'
+                              }}
+                              onMouseEnter={(e) => {
+                                if (updatingRequestId !== request.request_id) {
+                                  e.currentTarget.style.backgroundColor = '#059669';
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (updatingRequestId !== request.request_id) {
+                                  e.currentTarget.style.backgroundColor = '#10b981';
+                                }
+                              }}
+                            >
+                              {updatingRequestId === request.request_id ? 'Processing...' : 'Accept'}
+                            </button>
+                            <button
+                              onClick={() => updateRequestStatus(request.request_id, 'REJECTED')}
+                              disabled={updatingRequestId === request.request_id}
+                              style={{
+                                padding: '0.5rem 1rem',
+                                backgroundColor: '#ef4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                fontSize: '0.875rem',
+                                fontWeight: 600,
+                                cursor: updatingRequestId === request.request_id ? 'not-allowed' : 'pointer',
+                                opacity: updatingRequestId === request.request_id ? 0.6 : 1,
+                                transition: 'background-color 0.2s'
+                              }}
+                              onMouseEnter={(e) => {
+                                if (updatingRequestId !== request.request_id) {
+                                  e.currentTarget.style.backgroundColor = '#dc2626';
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (updatingRequestId !== request.request_id) {
+                                  e.currentTarget.style.backgroundColor = '#ef4444';
+                                }
+                              }}
+                            >
+                              {updatingRequestId === request.request_id ? 'Processing...' : 'Deny'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -334,5 +425,5 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
   );
 };
 
-export default StudentLifeViewRequests;
+export default StudentLifeEditRequests;
 
