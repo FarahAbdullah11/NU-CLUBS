@@ -33,7 +33,9 @@ def create_tables_on_first_request():
         _first_request = False
 
 # === Routes ===
-
+@app.route('/')
+def home():
+    return "Hello!"
 
 @app.route('/init-hash', methods=['GET'])
 def init_hash_passwords():
@@ -152,28 +154,28 @@ def update_request_status(request_id):
     data = request.get_json()
     user_id = data.get('user_id')
     new_status = data.get('status')
-    
+
     if not user_id:
         return jsonify({'error': 'User ID required'}), 401
-    
+
     if not new_status or new_status not in ['APPROVED', 'REJECTED']:
         return jsonify({'error': 'Invalid status. Must be APPROVED or REJECTED'}), 400
-    
+
     user = User.query.get(user_id)
     if not user or (user.role != 'SU_ADMIN' and user.role != 'STUDENT_LIFE_ADMIN'):
         return jsonify({'error': 'Only admins can update request status'}), 403
-    
+
     request_obj = Request.query.get(request_id)
     if not request_obj:
         return jsonify({'error': 'Request not found'}), 404
-    
+
     # Update request status
     request_obj.status = new_status
     request_obj.reviewed_by = user_id
     request_obj.updated_at = datetime.utcnow()
-    
+
     db.session.commit()
-    
+
     return jsonify({
         'message': f'Request {new_status.lower()} successfully',
         'request_id': request_obj.request_id,

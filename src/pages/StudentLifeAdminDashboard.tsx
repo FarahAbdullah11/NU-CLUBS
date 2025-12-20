@@ -219,7 +219,7 @@ const StudentLifeAdminDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               <line x1="3" y1="10" x2="17" y2="10" stroke="currentColor" strokeWidth="2"/>
               <line x1="3" y1="15" x2="17" y2="15" stroke="currentColor" strokeWidth="2"/>
             </svg>
-            <span>View My Requests</span>
+            <span>View and Edit All Requests</span>
           </Link>
           
           <Link 

@@ -58,7 +58,6 @@ const AdminViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
       
       if (requestsResponse.ok) {
         const requestsData = await requestsResponse.json();
-        console.log('Fetched requests:', requestsData); // Debug log
         // Sort by created_at descending (newest first)
         const sortedRequests = requestsData.sort((a: Request, b: Request) => 
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -67,7 +66,6 @@ const AdminViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
         setError(null);
       } else {
         const errorData = await requestsResponse.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('API Error:', errorData);
         setError(errorData.error || 'Failed to fetch requests');
         setRequests([]);
       }
@@ -80,8 +78,32 @@ const AdminViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
     }
   };
 
+  // ✅ ADD THIS FUNCTION
+  const updateRequestStatus = async (requestId: number, status: string) => {
+    try {
+      const userDataStr = localStorage.getItem('userData');
+      if (!userDataStr) return;
+      
+      const userData = JSON.parse(userDataStr);
+      const response = await fetch(`http://localhost:5000/api/admin/requests/${requestId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, user_id: userData.user_id })
+      });
+
+      if (response.ok) {
+        fetchRequests(); // Refresh list
+      } else {
+        const errorData = await response.json().catch(() => null);
+        alert(errorData?.error || 'Failed to update request status');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Network error — check Flask server');
+    }
+  };
+
   useEffect(() => {
-    console.log('AdminViewRequests component mounted');
     fetchRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -178,7 +200,7 @@ const AdminViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
               <line x1="3" y1="10" x2="17" y2="10" stroke="currentColor" strokeWidth="2"/>
               <line x1="3" y1="15" x2="17" y2="15" stroke="currentColor" strokeWidth="2"/>
             </svg>
-            <span>View All Requests</span>
+            <span>Edit and View All Requests</span>
           </Link>
           
           <Link 
@@ -292,6 +314,39 @@ const AdminViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
                         </span>
                       </div>
                     </div>
+
+                    {/* ✅ APPROVE/REJECT BUTTONS FOR PENDING REQUESTS */}
+                    {request.status === 'PENDING' && (
+                      <div className="request-actions" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
+                        <button
+                          onClick={() => updateRequestStatus(request.request_id, 'APPROVED')}
+                          style={{
+                            padding: '0.4rem 0.8rem',
+                            backgroundColor: '#10b981',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => updateRequestStatus(request.request_id, 'REJECTED')}
+                          style={{
+                            padding: '0.4rem 0.8rem',
+                            backgroundColor: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
+
                     <div className="request-card-footer">
                       <span className="request-submitted-date">
                         Submitted {new Date(request.created_at).toLocaleDateString('en-US', {
@@ -325,4 +380,3 @@ const AdminViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
 };
 
 export default AdminViewRequests;
-
