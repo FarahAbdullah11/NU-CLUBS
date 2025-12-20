@@ -1,0 +1,13 @@
+# render.yaml
+services:
+  - type: web
+    name: nu-clubs-backend
+    env: python
+    region: frankfurt
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app"
+    envVars:
+      - key: PORT
+        fromService:
+          name: nu-clubs-backend
+          property: port
