@@ -2,12 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import NavigationBar from '../components/Navbar';
-import './StudentLifeAdminDashboard.css';
-import './ViewRequests.css';
-
-interface DashboardProps {
-  onLogout?: () => void;
-}
+import './StudentLifeViewRequests.css';
 
 interface Request {
   request_id: number;
@@ -20,18 +15,11 @@ interface Request {
   club_name: string;
 }
 
-interface UserData {
-  user_id: number;
-  fullname: string;
-  role: string;
-}
-
-const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
+const StudentLifeViewRequests: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [requests, setRequests] = useState<Request[]>([]);
-  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [error, setError] = useState<string | null>(null);
@@ -45,34 +33,25 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
       }
 
       const userData = JSON.parse(userDataStr);
-      setUserData(userData);
-
-      // Verify user is STUDENT_LIFE_ADMIN
       if (userData.role !== 'STUDENT_LIFE_ADMIN') {
         navigate('/dashboard');
         return;
       }
 
-      // Fetch all requests from all clubs
       const requestsResponse = await fetch(`http://localhost:5000/api/admin/requests?user_id=${userData.user_id}`);
       
       if (requestsResponse.ok) {
         const requestsData = await requestsResponse.json();
-        console.log('Fetched requests:', requestsData); // Debug log
-        // Sort by created_at descending (newest first)
-        const sortedRequests = requestsData.sort((a: Request, b: Request) => 
+        setRequests(requestsData.sort((a: Request, b: Request) => 
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-        setRequests(sortedRequests);
+        ));
         setError(null);
       } else {
         const errorData = await requestsResponse.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('API Error:', errorData);
         setError(errorData.error || 'Failed to fetch requests');
         setRequests([]);
       }
     } catch (error) {
-      console.error('Error fetching requests:', error);
       setError('Network error. Please check if the backend server is running.');
       setRequests([]);
     } finally {
@@ -81,7 +60,6 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
   };
 
   useEffect(() => {
-    console.log('StudentLifeViewRequests component mounted');
     fetchRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -132,7 +110,7 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
 
   return (
     <div className="dashboard-container student-life-admin-dashboard">
-      <NavigationBar onLogout={onLogout} />
+      <NavigationBar onLogout={() => {}} />
       {/* Left Sidebar */}
       <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
@@ -178,10 +156,11 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
               <line x1="3" y1="10" x2="17" y2="10" stroke="currentColor" strokeWidth="2"/>
               <line x1="3" y1="15" x2="17" y2="15" stroke="currentColor" strokeWidth="2"/>
             </svg>
-            <span>View My Requests</span>
+            <span>View All Requests</span>
           </Link>
           
-          <Link 
+          {/* ❌ REMOVE THIS LINK */}
+          {/* <Link 
             to="/student-life-edit-requests" 
             className={`sidebar-nav-item ${location.pathname === '/student-life-edit-requests' ? 'active' : ''}`}
           >
@@ -189,8 +168,8 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
               <path d="M11 4H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5M14.5 1.5L18.5 5.5M18.5 5.5L14.5 9.5M18.5 5.5H8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <span>Edit Requests</span>
-          </Link>
-          
+          </Link> */}
+
           <Link 
             to="/#calendar" 
             className={`sidebar-nav-item ${location.pathname === '/' && window.location.hash === '#calendar' ? 'active' : ''}`}
@@ -279,7 +258,7 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
                         <h3 className="request-card-title">{request.title}</h3>
                         <div className="request-card-meta">
                           <span className="request-type">{getTypeLabel(request.type)}</span>
-                          <span className="request-type" style={{ fontWeight: 600, color: '#153966' }}>
+                          <span className="request-type" style={{ fontWeight: 600, color: '#1e2e8a' }}>
                             {request.club_name || 'Unknown Club'}
                           </span>
                           {request.event_date && (
@@ -335,4 +314,3 @@ const StudentLifeViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
 };
 
 export default StudentLifeViewRequests;
-
