@@ -5,7 +5,7 @@ import Calendar from '../components/Calendar';
 import './ClubDashboard.css';
 import NavigationBar from '../components/Navbar';
 
-interface DashboardProps {
+interface ClubDashboardProps {
   onLogout?: () => void;
 }
 
@@ -36,9 +36,10 @@ interface UserData {
   user_id: number;
   fullname: string;
   role: string;
+  club_id?: number;
 }
 
-const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+const ClubDashboard: React.FC<ClubDashboardProps> = ({ onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -61,7 +62,7 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         return;
       }
 
-      const userData = JSON.parse(userDataStr);
+      const userData = JSON.parse(userDataStr) as UserData;
       setUserData(userData);
 
       // Set club name and logo based on club_id
@@ -88,7 +89,7 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       }
 
       setClubData({
-        club_id: userData.club_id,
+        club_id: userData.club_id || 0,
         club_name: clubName,
         logo_url: logoUrl,
         budget: 5000
@@ -246,36 +247,29 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
           </Link>
           
           <Link 
-  to="/#calendar" 
-  className={`sidebar-nav-item ${location.pathname === '/' && window.location.hash === '#calendar' ? 'active' : ''}`}
-  onClick={(e) => {
-    // Optional: Scroll to #calendar if already on home page
-    if (location.pathname === '/') {
-      e.preventDefault();
-      document.getElementById('calendar')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }}
->
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="3" y="4" width="14" height="13" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-    <line x1="6" y1="2" x2="6" y2="6" stroke="currentColor" strokeWidth="1.5"/>
-    <line x1="14" y1="2" x2="14" y2="6" stroke="currentColor" strokeWidth="1.5"/>
-    <line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" strokeWidth="1.5"/>
-  </svg>
-  <span>Calendar</span>
-</Link>
-          
-          
-          
-          
+            to="/#calendar" 
+            className={`sidebar-nav-item ${location.pathname === '/' && window.location.hash === '#calendar' ? 'active' : ''}`}
+            onClick={(e: React.MouseEvent) => {
+              // Optional: Scroll to #calendar if already on home page
+              if (location.pathname === '/') {
+                e.preventDefault();
+                document.getElementById('calendar')?.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="4" width="14" height="13" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <line x1="6" y1="2" x2="6" y2="6" stroke="currentColor" strokeWidth="1.5"/>
+              <line x1="14" y1="2" x2="14" y2="6" stroke="currentColor" strokeWidth="1.5"/>
+              <line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" strokeWidth="1.5"/>
+            </svg>
+            <span>Calendar</span>
+          </Link>
         </nav>
       </aside>
 
       {/* Main Content Area */}
       <main className={`dashboard-main ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-        {/* Top Navigation Bar */}
-        
-
         {/* Key Metrics Section */}
         <section className="dashboard-metrics">
           <div className="metric-card">
@@ -324,54 +318,54 @@ const ClubDashboard: React.FC<DashboardProps> = ({ onLogout }) => {
           </div>
         </section>
 
-{/* Notifications Section */}
-<section className="dashboard-notifications">
-  <div className="notifications-content">
-    <div className="notifications-title-container">
-      <div className="notifications-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </div>
-      <h2 className="notifications-title">Notifications</h2>
-    </div>
-    <ul className="notifications-list">
-      {notifications.length > 0 ? (
-        notifications.map((notification) => (
-          <li key={notification.notification_id} className="notification-item">
-            <div className="notification-content">
-              <div className="notification-info">
-                <div className="notification-title">
-                  {notification.title}
-                </div>
-                <div className="notification-subtitle">
-                  {notification.type === 'ROOM_BOOKING' ? 'Room' : 
-                   notification.type === 'EVENT' ? 'Event' : 'Funding'} • 
-                  Submitted {new Date(notification.created_at).toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric', 
-                    year: 'numeric' 
-                  })}
-                </div>
+        {/* Notifications Section */}
+        <section className="dashboard-notifications">
+          <div className="notifications-content">
+            <div className="notifications-title-container">
+              <div className="notifications-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
-              <div className="notification-status">
-                <span className={`status-badge status-${notification.status.toLowerCase()}`}>
-                  {notification.status === 'PENDING' ? 'Pending' : 
-                   notification.status === 'APPROVED' ? 'Approved' : 'Rejected'}
-                </span>
-              </div>
+              <h2 className="notifications-title">Notifications</h2>
             </div>
-          </li>
-        ))
-      ) : (
-        <li className="notification-item">
-          <span className="notification-text">No notifications</span>
-        </li>
-      )}
-    </ul>
-  </div>
-</section>
+            <ul className="notifications-list">
+              {notifications.length > 0 ? (
+                notifications.map((notification) => (
+                  <li key={notification.notification_id} className="notification-item">
+                    <div className="notification-content">
+                      <div className="notification-info">
+                        <div className="notification-title">
+                          {notification.title}
+                        </div>
+                        <div className="notification-subtitle">
+                          {notification.type === 'ROOM_BOOKING' ? 'Room' : 
+                           notification.type === 'EVENT' ? 'Event' : 'Funding'} • 
+                          Submitted {new Date(notification.created_at).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          })}
+                        </div>
+                      </div>
+                      <div className="notification-status">
+                        <span className={`status-badge status-${notification.status.toLowerCase()}`}>
+                          {notification.status === 'PENDING' ? 'Pending' : 
+                           notification.status === 'APPROVED' ? 'Approved' : 'Rejected'}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                ))
+              ) : (
+                <li className="notification-item">
+                  <span className="notification-text">No notifications</span>
+                </li>
+              )}
+            </ul>
+          </div>
+        </section>
       </main>
     </div>
   );

@@ -1,10 +1,17 @@
 // src/pages/ClubRequests.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavigationBar from '../components/Navbar';
 import './ClubRequests.css';
 
 interface ClubRequestsProps {
   onLogout?: () => void;
+}
+
+interface UserData {
+  user_id: number;
+  fullname: string;
+  role: string;
+  club_id?: number;
 }
 
 const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
@@ -18,66 +25,54 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
   const [roomId, setRoomId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [userData, setUserData] = useState<UserData | null>(null);
 
-  // Get user data from localStorage
-  const userDataStr = localStorage.getItem('userData');
-  if (!userDataStr) {
-    return (
-      <div className="club-requests-page">
-        <NavigationBar onLogout={onLogout} />
-        <div style={{ padding: '2rem', textAlign: 'center' }}>
-          <p>Please log in to submit requests.</p>
-          <button 
-            onClick={() => window.location.href = '/login'}
-            style={{ 
-              padding: '0.5rem 1rem', 
-              backgroundColor: '#1a73e8', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const userData = JSON.parse(userDataStr);
-  const clubId = userData.club_id;
+  // Handle user data parsing on mount
+  useEffect(() => {
+    const userDataStr = localStorage.getItem('userData');
+    if (userDataStr) {
+      try {
+        const parsedData = JSON.parse(userDataStr) as UserData;
+        setUserData(parsedData);
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        // Will redirect to login below
+      }
+    }
+  }, []);
 
   // Get club name for display
   const getClubName = () => {
-    if (clubId === 1) return 'NIMUN';
-    if (clubId === 2) return 'RPM';
-    if (clubId === 3) return 'ICPC';
-    if (clubId === 4) return 'IEEE';
-    return 'Club';
+    if (!userData?.club_id) return 'Club';
+    switch (userData.club_id) {
+      case 1: return 'NIMUN';
+      case 2: return 'RPM';
+      case 3: return 'ICPC';
+      case 4: return 'IEEE';
+      default: return 'Club';
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userData) return;
+
     setSubmitting(true);
     setMessage('');
 
     try {
-      // Build request data
-      const requestData: any = {
+      const requestData = {
         user_id: userData.user_id,
-        club_id: clubId,
+        club_id: userData.club_id,
         title: title.trim(),
         description: description.trim(),
-        request_type: requestType
+        request_type: requestType,
+        ...(eventDate && { event_date: eventDate }),
+        ...(startTime && { start_time: startTime }),
+        ...(endTime && { end_time: endTime }),
+        ...(location.trim() && { location: location.trim() }),
+        ...(roomId.trim() && { room_id: parseInt(roomId.trim(), 10) })
       };
-
-      // Add optional fields only if provided
-      if (eventDate) requestData.event_date = eventDate;
-      if (startTime) requestData.start_time = startTime;
-      if (endTime) requestData.end_time = endTime;
-      if (location.trim()) requestData.location = location.trim();
-      if (roomId.trim()) requestData.room_id = parseInt(roomId.trim());
 
       // Validate required fields
       if (!requestData.title) {
@@ -118,6 +113,31 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
     }
   };
 
+  // Redirect to login if no user data
+  if (!userData) {
+    return (
+      <div className="club-requests-page">
+        <NavigationBar onLogout={onLogout} />
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          <p>Please log in to submit requests.</p>
+          <button 
+            onClick={() => window.location.href = '/login'}
+            style={{ 
+              padding: '0.5rem 1rem', 
+              backgroundColor: '#1a73e8', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="club-requests-page">
       <NavigationBar onLogout={onLogout} />
@@ -152,7 +172,7 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
               <select
                 id="requestType"
                 value={requestType}
-                onChange={(e) => setRequestType(e.target.value as any)}
+                onChange={(e) => setRequestType(e.target.value as 'ROOM_BOOKING' | 'EVENT' | 'FUNDING')}
                 required
                 className="form-control"
               >
@@ -160,7 +180,7 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
                 <option value="EVENT">Event</option>
                 <option value="FUNDING">Funding Request</option>
               </select>
-            </ div>
+            </div>
 
             <div className="form-group">
               <label htmlFor="title">Title *</label>
@@ -268,9 +288,6 @@ const ClubRequests: React.FC<ClubRequestsProps> = ({ onLogout }) => {
             </button>
           </form>
         </div>
-
-        {/* Existing request types section (keep your UI) */}
-        
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import NavigationBar from '../components/Navbar';
 import './ClubDashboard.css';
 import './ViewRequests.css';
 
-interface DashboardProps {
+interface ViewRequestsProps {
   onLogout?: () => void;
 }
 
@@ -29,9 +29,10 @@ interface UserData {
   user_id: number;
   fullname: string;
   role: string;
+  club_id?: number;
 }
 
-const ViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
+const ViewRequests: React.FC<ViewRequestsProps> = ({ onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -49,7 +50,7 @@ const ViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
         return;
       }
 
-      const userData = JSON.parse(userDataStr);
+      const userData = JSON.parse(userDataStr) as UserData;
       setUserData(userData);
 
       // Set club name and logo based on club_id
@@ -71,7 +72,7 @@ const ViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
       }
 
       setClubData({
-        club_id: userData.club_id,
+        club_id: userData.club_id || 0,
         club_name: clubName,
         logo_url: logoUrl,
         budget: 5000
@@ -220,36 +221,29 @@ const ViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
           </Link>
           
           <Link 
-  to="/#calendar" 
-  className={`sidebar-nav-item ${location.pathname === '/' && window.location.hash === '#calendar' ? 'active' : ''}`}
-  onClick={(e) => {
-    // Optional: Scroll to #calendar if already on home page
-    if (location.pathname === '/') {
-      e.preventDefault();
-      document.getElementById('calendar')?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }}
->
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <rect x="3" y="4" width="14" height="13" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-    <line x1="6" y1="2" x2="6" y2="6" stroke="currentColor" strokeWidth="1.5"/>
-    <line x1="14" y1="2" x2="14" y2="6" stroke="currentColor" strokeWidth="1.5"/>
-    <line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" strokeWidth="1.5"/>
-  </svg>
-  <span>Calendar</span>
-</Link>
-          
-          
-          
-          
+            to="/#calendar" 
+            className={`sidebar-nav-item ${location.pathname === '/' && window.location.hash === '#calendar' ? 'active' : ''}`}
+            onClick={(e: React.MouseEvent) => {
+              // Optional: Scroll to #calendar if already on home page
+              if (location.pathname === '/') {
+                e.preventDefault();
+                document.getElementById('calendar')?.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="4" width="14" height="13" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <line x1="6" y1="2" x2="6" y2="6" stroke="currentColor" strokeWidth="1.5"/>
+              <line x1="14" y1="2" x2="14" y2="6" stroke="currentColor" strokeWidth="1.5"/>
+              <line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" strokeWidth="1.5"/>
+            </svg>
+            <span>Calendar</span>
+          </Link>
         </nav>
       </aside>
 
       {/* Main Content Area */}
       <main className={`dashboard-main ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-        {/* Top Navigation Bar */}
-        
-
         {/* Requests Section */}
         <section className="view-requests-section">
           <div className="view-requests-header">
@@ -351,4 +345,3 @@ const ViewRequests: React.FC<DashboardProps> = ({ onLogout }) => {
 };
 
 export default ViewRequests;
-

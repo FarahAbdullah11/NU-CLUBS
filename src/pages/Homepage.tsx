@@ -10,39 +10,40 @@ interface HomepageProps {
 }
 
 const Homepage: React.FC<HomepageProps> = ({ onLogout }) => {
-  // 👇 Auto-scroll to #calendar on load or hash change
   useEffect(() => {
-    const scrollToHash = () => {
+    const scrollToCalendar = () => {
       if (window.location.hash === '#calendar') {
         const calendarElement = document.getElementById('calendar');
         if (calendarElement) {
-          // Small delay ensures the DOM is fully rendered
-          setTimeout(() => {
-            calendarElement.scrollIntoView({ behavior: 'smooth' });
-          }, 100);
+          // Use requestAnimationFrame for better timing
+          requestAnimationFrame(() => {
+            calendarElement.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+          });
         }
       }
     };
 
     // Scroll on initial load
-    scrollToHash();
+    scrollToCalendar();
 
-    // Optional: handle future hash changes (e.g., if user bookmarks #calendar)
-    window.addEventListener('hashchange', scrollToHash);
+    // Handle hash changes (e.g., user clicks a #calendar link)
+    window.addEventListener('hashchange', scrollToCalendar);
 
-    // Cleanup listener
     return () => {
-      window.removeEventListener('hashchange', scrollToHash);
+      window.removeEventListener('hashchange', scrollToCalendar);
     };
   }, []);
 
   return (
-    <div>
+    <div className="homepage">
       <NavigationBar onLogout={onLogout} />
       <Hero />
       
-      {/* 🔑 This ID is essential for scrolling */}
-      <div id="calendar">
+      {/* Essential ID for scroll targeting */}
+      <div id="calendar" className="calendar-section">
         <Calendar />
       </div>
       
