@@ -15,7 +15,7 @@ interface Request {
   club_name: string;
 }
 
-const StudentLifeViewRequests: React.FC = () => {
+const StudentLifeViewRequests: React.FC<{ onLogout?: () => void }> = ({ onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -110,7 +110,7 @@ const StudentLifeViewRequests: React.FC = () => {
 
   return (
     <div className="dashboard-container student-life-admin-dashboard">
-      <NavigationBar onLogout={() => {}} />
+      <NavigationBar onLogout={onLogout || (() => {})} />
       {/* Left Sidebar */}
       <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">

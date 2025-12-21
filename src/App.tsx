@@ -104,22 +104,23 @@ const StudentLifeViewRequestsGuard: React.FC<{ onLogout?: () => void }> = ({
 };
 
 // Student Life Edit Requests Guard - only allows SU_ADMIN
-const StudentLifeEditRequestsGuard: React.FC<{ onLogout?: () => void }> = ({
-  onLogout,
-}) => {
-  const userDataStr = localStorage.getItem("userData");
-  if (userDataStr) {
-    try {
-      const userData = JSON.parse(userDataStr);
-      if (userData.role === "SU_ADMIN") {
-        return <StudentLifeEditRequests onLogout={onLogout} />;
-      }
-    } catch (e) {
-      // If parsing fails, redirect to dashboard
-    }
-  }
-  return <Navigate to="/dashboard" replace />;
-};
+// TODO: Uncomment when StudentLifeEditRequests component is created
+// const StudentLifeEditRequestsGuard: React.FC<{ onLogout?: () => void }> = ({
+//   onLogout,
+// }) => {
+//   const userDataStr = localStorage.getItem("userData");
+//   if (userDataStr) {
+//     try {
+//       const userData = JSON.parse(userDataStr);
+//       if (userData.role === "SU_ADMIN") {
+//         return <StudentLifeEditRequests onLogout={onLogout} />;
+//       }
+//     } catch (e) {
+//       // If parsing fails, redirect to dashboard
+//     }
+//   }
+//   return <Navigate to="/dashboard" replace />;
+// };
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
